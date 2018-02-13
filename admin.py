@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Municipality, CouncilMember, FireDepartment, PoliceDepartment
+from .models import Municipality, CouncilMember, FireDepartment, PoliceDepartment, Library
 
 class CouncilMemberInline(admin.TabularInline):
     model = CouncilMember
@@ -29,3 +29,14 @@ class PoliceDepartmentAdmin(admin.ModelAdmin):
     ordering = ['police_station']
 
 admin.site.register(PoliceDepartment, PoliceDepartmentAdmin)
+
+
+
+
+class LibraryAdmin(admin.ModelAdmin):
+    list_display = ['library_name', 'street_address', 'city', 'zip_code', 'web_site', 'contact']
+
+    search_fields = list_display
+    ordering = ['library_name']
+
+admin.site.register(Library, LibraryAdmin)

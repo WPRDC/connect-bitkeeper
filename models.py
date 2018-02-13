@@ -69,3 +69,14 @@ class StateSenateDistrict(models.Model):
     district = models.SmallIntegerField()
     municipality = models.ForeignKey(Municipality)
 
+class Library(models.Model):
+    library_name = models.CharField(max_length=100,unique=True)
+    street_address = models.CharField(max_length=100)
+    city = models.CharField(max_length=50)
+    #state = models.CharField(max_length=2)
+    # Why is the state listed here but not elsewhere?
+    # I think it's fine to just assume that the state is "PA" 
+    # everywhere in this database until that becomes untrue.
+    zip_code = models.CharField(max_length=10)
+    web_site = models.CharField(max_length=90, blank=True, null=True)
+    contact = models.CharField(max_length=100)
