@@ -8,6 +8,9 @@ class FireDepartment(models.Model):
     latitude = models.FloatField(blank=True, null=True)
     longitude = models.FloatField(blank=True, null=True)
 
+    def __str__(self):
+        return 'Fire Department: {}'.format(self.name)
+
 class PoliceDepartment(models.Model):
     police_station = models.CharField(max_length=100, unique=True)
     street_address = models.CharField(max_length=100)
@@ -18,6 +21,9 @@ class PoliceDepartment(models.Model):
     chief_email = models.CharField(max_length=90, blank=True, null=True, editable=True)
     web_site = models.CharField(max_length=90, blank=True, null=True)
 
+    def __str__(self):
+        return 'Police Department: {}'.format(self.police_station)
+
 class EMSDepartment(models.Model):
     name = models.CharField(max_length=100, unique=True)
     street_address = models.CharField(max_length=100)
@@ -27,6 +33,9 @@ class EMSDepartment(models.Model):
     contact = models.CharField(max_length=100)
     director_email = models.CharField(max_length=100, blank=True, null=True)
     web_site = models.CharField(max_length=90, blank=True, null=True)
+
+    def __str__(self):
+        return 'EMS Department: {}'.format(self.name)
 
 class Municipality(models.Model):
     municipality = models.CharField(max_length=100, unique=True)
@@ -57,17 +66,29 @@ class Municipality(models.Model):
     class Meta:
         verbose_name_plural = "municipalities"
 
+    def __str__(self):
+        return 'Municipality: {}'.format(self.municipality)
+
 class CouncilMember(models.Model):
     name = models.CharField(max_length=100)
     municipality = models.ForeignKey(Municipality)
+
+    def __str__(self):
+        return self.name
 
 class StateHouseDistrict(models.Model):
     district = models.SmallIntegerField()
     municipality = models.ForeignKey(Municipality)
 
+    def __str__(self):
+        return '{}'.format(self.district)
+
 class StateSenateDistrict(models.Model):
     district = models.SmallIntegerField()
     municipality = models.ForeignKey(Municipality)
+
+    def __str__(self):
+        return '{}'.format(self.district)
 
 class Library(models.Model):
     library_name = models.CharField(max_length=100,unique=True)
@@ -80,3 +101,9 @@ class Library(models.Model):
     zip_code = models.CharField(max_length=10)
     web_site = models.CharField(max_length=90, blank=True, null=True)
     contact = models.CharField(max_length=100)
+
+    def __str__(self):
+        return 'Library: {}'.format(self.library_name)
+
+    class Meta:
+        verbose_name_plural = "libraries"
