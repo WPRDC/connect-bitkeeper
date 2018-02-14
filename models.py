@@ -42,14 +42,14 @@ class Municipality(models.Model):
     # [ ] state_house_representative, state_house_representative_party, state_senator, and state_senator_party need to be linked to other tables through the district numbers.
 
 
-    ems_department = models.ForeignKey(EMSDepartment,null=True)
+    ems_department = models.ForeignKey(EMSDepartment,verbose_name="EMS department",null=True,blank=True)
     # Each CouncilMember maps to one Municipality, but 
     # each Municipality has multiple CouncilMembers.
     # Similarly, each Municipality maps to one EMS/Fire/Police Department,
     # but some of those Departments can map to multiple Municipalities.
 
-    fire_department = models.ForeignKey(FireDepartment,null=True)
-    police_department = models.ForeignKey(PoliceDepartment,null=True)
+    fire_department = models.ForeignKey(FireDepartment,null=True,blank=True)
+    police_department = models.ForeignKey(PoliceDepartment,null=True,blank=True)
 
 
     # [ ] watershed is a many-to-many relationship. How do we model this?
