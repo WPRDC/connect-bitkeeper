@@ -70,7 +70,9 @@ class Municipality(models.Model):
     manager_contact = models.CharField(max_length=200, blank=True, null=True)
     school_district = models.CharField(max_length=100, blank=True, null=True)
     # [ ] School district could also be a separate table.
-    
+    state_house_district =  models.SmallIntegerField(blank=True, null=True)
+    state_senate_district =  models.SmallIntegerField(blank=True, null=True)
+    county_council_district =  models.SmallIntegerField(blank=True, null=True)
     # [ ] state_house_representative, state_house_representative_party, state_senator, and state_senator_party need to be linked to other tables through the district numbers.
 
 
