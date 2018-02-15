@@ -74,7 +74,9 @@ class Municipality(models.Model):
     state_senate_district =  models.SmallIntegerField(blank=True, null=True)
     county_council_district =  models.SmallIntegerField(blank=True, null=True)
     # [ ] state_house_representative, state_house_representative_party, state_senator, and state_senator_party need to be linked to other tables through the district numbers.
-
+    municipal_address = models.CharField(max_length=100, blank=True, null=True)
+    municipal_city= models.CharField(max_length=50, blank=True, null=True)
+    municipal_zip_code = models.CharField(max_length=10, blank=True, null=True)
 
     ems_department = models.ForeignKey(EMSDepartment,verbose_name="EMS department",null=True,blank=True)
     # Each CouncilMember maps to one Municipality, but 
@@ -87,7 +89,7 @@ class Municipality(models.Model):
 
 
     # [ ] watershed is a many-to-many relationship. How do we model this?
-
+    #=models.ManyToManyField()
     class Meta:
         verbose_name_plural = "municipalities"
 
