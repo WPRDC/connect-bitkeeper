@@ -1,6 +1,18 @@
 from django.contrib import admin
 
-from .models import Municipality, CouncilMember, FireDepartment, PoliceDepartment, Library
+from .models import Municipality, CouncilMember, FireDepartment, PoliceDepartment, EMSDepartment, Library, PGHCouncilDistrict
+
+#class EMSInline(admin.TabularInline):
+#    model = EMSDepartment
+
+class PGHCouncilDistrictAdmin(admin.ModelAdmin):
+#    inlines = [EMSInline]
+    list_display = ['council_district', 'committee', 'phone', 'council_member']
+
+    search_fields = list_display
+    ordering = ['council_district']
+
+admin.site.register(PGHCouncilDistrict, PGHCouncilDistrictAdmin)
 
 class CouncilMemberInline(admin.TabularInline):
     model = CouncilMember
@@ -29,7 +41,6 @@ class PoliceDepartmentAdmin(admin.ModelAdmin):
     ordering = ['police_station']
 
 admin.site.register(PoliceDepartment, PoliceDepartmentAdmin)
-
 
 
 
