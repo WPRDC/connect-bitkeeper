@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Municipality, CouncilMember, FireDepartment, PoliceDepartment, EMSDepartment, Library, PGHCouncilDistrict
+from .models import Municipality, CouncilMember, FireDepartment, PoliceDepartment, EMSDepartment, Library, PGHCouncilDistrict, Watershed
 
 #class EMSInline(admin.TabularInline):
 #    model = EMSDepartment
@@ -51,3 +51,11 @@ class LibraryAdmin(admin.ModelAdmin):
     ordering = ['library_name']
 
 admin.site.register(Library, LibraryAdmin)
+
+class WatershedAdmin(admin.ModelAdmin):
+    list_display = ['watershed_name', 'watershed_association']
+
+    search_fields = list_display
+    ordering = ['watershed_name']
+
+admin.site.register(Watershed, WatershedAdmin)

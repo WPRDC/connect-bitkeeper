@@ -60,6 +60,17 @@ class PGHCouncilDistrict(models.Model):
         verbose_name = "PGH council district"
         verbose_name_plural = "PGH council districts"
 
+class Watershed(models.Model):
+    watershed_name = models.CharField(max_length=100)
+    watershed_association = models.CharField(max_length=100,blank=True,null=True)
+
+    # [ ] Is it correct that there's one watershed association associated
+    # with each watershed? Can there be zero?
+
+    def __str__(self):
+        return self.watershed_name
+
+
 class Municipality(models.Model):
     municipality = models.CharField(max_length=100, unique=True)
     cog = models.CharField(verbose_name = "COG", max_length=100)
@@ -87,15 +98,16 @@ class Municipality(models.Model):
     fire_department = models.ForeignKey(FireDepartment,null=True,blank=True)
     police_department = models.ForeignKey(PoliceDepartment,null=True,blank=True)
 
+    # watershed is a many-to-many relationship, since each municipality
+    # can belong to multiple watersheds and each watershed can be in 
+    # multiple municipalities.
+    watershed = models.ManyToManyField(Watershed,null=True,blank=True)
 
-    # [ ] watershed is a many-to-many relationship. How do we model this?
-    #=models.ManyToManyField()
     class Meta:
         verbose_name_plural = "municipalities"
 
     def __str__(self):
         return 'Municipality: {}'.format(self.municipality)
-
 
 class CouncilMember(models.Model):
     name = models.CharField(max_length=100)
