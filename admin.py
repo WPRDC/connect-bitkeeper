@@ -4,6 +4,8 @@ from .models import Municipality, CouncilMember, FireDepartment, PoliceDepartmen
 
 
 admin.site.site_header = 'CONNECT Map Bitkeeper'
+admin.site.site_title = 'CONNECT Map Bitkeeper'
+admin.site.index_title = 'Bitkeeper'
 
 #class EMSInline(admin.TabularInline):
 #    model = EMSDepartment
