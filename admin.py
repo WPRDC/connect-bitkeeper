@@ -30,7 +30,7 @@ class MunicipalityAdmin(admin.ModelAdmin):
 admin.site.register(Municipality, MunicipalityAdmin)
 
 class FireDepartmentAdmin(admin.ModelAdmin):
-    list_display = ['name', 'street_address', 'city', 'zip_code']
+    list_display = ['name', 'street_address', 'address_city', 'zip_code']
 
     search_fields = list_display
     ordering = ['name']
@@ -38,7 +38,7 @@ class FireDepartmentAdmin(admin.ModelAdmin):
 admin.site.register(FireDepartment, FireDepartmentAdmin)
 
 class PoliceDepartmentAdmin(admin.ModelAdmin):
-    list_display = ['police_station', 'street_address', 'city', 'zip_code', 'chief_name', 'phone', 'chief_email']
+    list_display = ['police_station', 'street_address', 'address_city', 'zip_code', 'chief_name', 'phone', 'chief_email']
 
     search_fields = list_display
     ordering = ['police_station']
@@ -48,7 +48,7 @@ admin.site.register(PoliceDepartment, PoliceDepartmentAdmin)
 
 
 class LibraryAdmin(admin.ModelAdmin):
-    list_display = ['library_name', 'street_address', 'city', 'zip_code', 'web_site', 'contact']
+    list_display = ['library_name', 'street_address', 'address_city', 'zip_code', 'web_site', 'contact']
 
     search_fields = list_display
     ordering = ['library_name']

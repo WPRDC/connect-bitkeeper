@@ -3,7 +3,10 @@ from django.db import models
 class FireDepartment(models.Model):
     name = models.CharField(max_length=100, unique=True)
     street_address = models.CharField(max_length=100)
-    city = models.CharField(max_length=50)
+    address_city = models.CharField(max_length=50) # The mailing address
+    # may often have a city value of "Pittsburgh" even though the 
+    # location is in some other municipality, so we use the disambiguating
+    # field name "address_city".
     zip_code = models.CharField(max_length=10)
     latitude = models.FloatField(blank=True, null=True)
     longitude = models.FloatField(blank=True, null=True)
@@ -14,7 +17,7 @@ class FireDepartment(models.Model):
 class PoliceDepartment(models.Model):
     police_station = models.CharField(max_length=100, unique=True)
     street_address = models.CharField(max_length=100)
-    city = models.CharField(max_length=50)
+    address_city = models.CharField(max_length=50)
     zip_code = models.CharField(max_length=10)
     chief_name = models.CharField(max_length=50, blank=True, null=True)
     phone = models.CharField(max_length=50, blank=True, null=True)
@@ -27,7 +30,7 @@ class PoliceDepartment(models.Model):
 class EMSDepartment(models.Model):
     name = models.CharField(max_length=100, unique=True)
     street_address = models.CharField(max_length=100)
-    city = models.CharField(max_length=50)
+    address_city = models.CharField(max_length=50)
     zip_code = models.CharField(max_length=10)
     director_name = models.CharField(max_length=100)
     contact = models.CharField(max_length=100)
@@ -133,7 +136,7 @@ class StateSenateDistrict(models.Model):
 class Library(models.Model):
     library_name = models.CharField(max_length=100,unique=True)
     street_address = models.CharField(max_length=100)
-    city = models.CharField(max_length=50)
+    address_city = models.CharField(max_length=50)
     #state = models.CharField(max_length=2)
     # Why is the state listed here but not elsewhere?
     # I think it's fine to just assume that the state is "PA" 
