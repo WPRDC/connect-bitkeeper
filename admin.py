@@ -29,6 +29,14 @@ class MunicipalityAdmin(admin.ModelAdmin):
 
 admin.site.register(Municipality, MunicipalityAdmin)
 
+class EMSDepartmentAdmin(admin.ModelAdmin):
+    list_display = ['name', 'street_address', 'address_city', 'zip_code']
+
+    search_fields = list_display
+    ordering = ['name']
+
+admin.site.register(EMSDepartment, EMSDepartmentAdmin)
+
 class FireDepartmentAdmin(admin.ModelAdmin):
     list_display = ['name', 'street_address', 'address_city', 'zip_code']
 
