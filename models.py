@@ -104,7 +104,7 @@ class Municipality(models.Model):
     # watershed is a many-to-many relationship, since each municipality
     # can belong to multiple watersheds and each watershed can be in 
     # multiple municipalities.
-    watershed = models.ManyToManyField(Watershed,null=True,blank=True)
+    watershed = models.ManyToManyField(Watershed,blank=True)
 
     class Meta:
         verbose_name_plural = "municipalities"
