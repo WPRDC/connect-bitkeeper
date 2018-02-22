@@ -2,6 +2,9 @@ from django.contrib import admin
 
 from .models import Municipality, CouncilMember, FireDepartment, PoliceDepartment, EMSDepartment, Library, PGHCouncilDistrict, Watershed
 
+
+admin.site.site_header = 'CONNECT Map Bitkeeper'
+
 #class EMSInline(admin.TabularInline):
 #    model = EMSDepartment
 
