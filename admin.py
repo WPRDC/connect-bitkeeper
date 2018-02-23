@@ -7,11 +7,11 @@ admin.site.site_header = 'CONNECT Map Bitkeeper'
 admin.site.site_title = 'CONNECT Map Bitkeeper'
 admin.site.index_title = 'Bitkeeper'
 
-#class EMSInline(admin.TabularInline):
-#    model = EMSDepartment
+class EMSInline(admin.TabularInline):
+    model = EMSDepartment
 
 class PGHCouncilDistrictAdmin(admin.ModelAdmin):
-#    inlines = [EMSInline]
+    inlines = [EMSInline]
     list_display = ['council_district', 'committee', 'phone', 'council_member']
 
     search_fields = list_display

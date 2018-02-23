@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class FireDepartment(models.Model):
     name = models.CharField(max_length=100, unique=True)
     street_address = models.CharField(max_length=100)
@@ -27,22 +28,6 @@ class PoliceDepartment(models.Model):
     def __str__(self):
         return 'Police Department: {}'.format(self.police_station)
 
-class EMSDepartment(models.Model):
-    name = models.CharField(max_length=100, unique=True)
-    street_address = models.CharField(max_length=100)
-    address_city = models.CharField(max_length=50)
-    zip_code = models.CharField(max_length=10)
-    director_name = models.CharField(max_length=100)
-    contact = models.CharField(max_length=100)
-    director_email = models.CharField(max_length=100, blank=True, null=True)
-    web_site = models.CharField(max_length=90, blank=True, null=True)
-
-    class Meta:
-        verbose_name = "EMS department"
-
-    def __str__(self):
-        return 'EMS Department: {}'.format(self.name)
-
 class PGHCouncilDistrict(models.Model):
     council_district = models.SmallIntegerField(unique=True,primary_key=True)
     committee = models.CharField(max_length=100)
@@ -53,7 +38,6 @@ class PGHCouncilDistrict(models.Model):
 
     # Departments are all linked to PGH council districts
     # with foreign-key relationships.
-    ems_department = models.ForeignKey(EMSDepartment,verbose_name="EMS department",null=True,blank=True)
     police_department = models.ForeignKey(PoliceDepartment,null=True,blank=True)
 
     def __str__(self):
@@ -62,6 +46,23 @@ class PGHCouncilDistrict(models.Model):
     class Meta:
         verbose_name = "PGH council district"
         verbose_name_plural = "PGH council districts"
+
+class EMSDepartment(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    street_address = models.CharField(max_length=100)
+    address_city = models.CharField(max_length=50)
+    zip_code = models.CharField(max_length=10)
+    director_name = models.CharField(max_length=100)
+    contact = models.CharField(max_length=100)
+    director_email = models.CharField(max_length=100, blank=True, null=True)
+    web_site = models.CharField(max_length=90, blank=True, null=True)
+    pittsburgh_council_district = models.ForeignKey(PGHCouncilDistrict, blank=True, null=True)
+
+    class Meta:
+        verbose_name = "EMS department"
+
+    def __str__(self):
+        return 'EMS Department: {}'.format(self.name)
 
 class Watershed(models.Model):
     watershed_name = models.CharField(max_length=100)
@@ -72,7 +73,6 @@ class Watershed(models.Model):
 
     def __str__(self):
         return self.watershed_name
-
 
 class Municipality(models.Model):
     municipality = models.CharField(max_length=100, unique=True)
