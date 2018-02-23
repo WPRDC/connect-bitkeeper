@@ -10,8 +10,11 @@ admin.site.index_title = 'Bitkeeper'
 class EMSInline(admin.TabularInline):
     model = EMSDepartment
 
+class PoliceInline(admin.TabularInline):
+    model = PoliceDepartment
+
 class PGHCouncilDistrictAdmin(admin.ModelAdmin):
-    inlines = [EMSInline]
+    inlines = [EMSInline, PoliceInline]
     list_display = ['council_district', 'committee', 'phone', 'council_member']
 
     search_fields = list_display

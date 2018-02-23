@@ -15,19 +15,6 @@ class FireDepartment(models.Model):
     def __str__(self):
         return 'Fire Department: {}'.format(self.name)
 
-class PoliceDepartment(models.Model):
-    police_station = models.CharField(max_length=100, unique=True)
-    street_address = models.CharField(max_length=100)
-    address_city = models.CharField(max_length=50)
-    zip_code = models.CharField(max_length=10)
-    chief_name = models.CharField(max_length=50, blank=True, null=True)
-    phone = models.CharField(max_length=50, blank=True, null=True)
-    chief_email = models.CharField(max_length=90, blank=True, null=True)
-    web_site = models.CharField(max_length=90, blank=True, null=True)
-
-    def __str__(self):
-        return 'Police Department: {}'.format(self.police_station)
-
 class PGHCouncilDistrict(models.Model):
     council_district = models.SmallIntegerField(unique=True,primary_key=True)
     committee = models.CharField(max_length=100)
@@ -37,8 +24,9 @@ class PGHCouncilDistrict(models.Model):
     # district, so this is a one-to-one relationship.
 
     # Departments are all linked to PGH council districts
-    # with foreign-key relationships.
-    police_department = models.ForeignKey(PoliceDepartment,null=True,blank=True)
+    # with foreign-key relationships in such a way that 
+    # multiple police/EMS departments can be in the same
+    # Pittsburgh council district.
 
     def __str__(self):
         return 'PGH Council District {}'.format(self.council_district)
@@ -63,6 +51,20 @@ class EMSDepartment(models.Model):
 
     def __str__(self):
         return 'EMS Department: {}'.format(self.name)
+
+class PoliceDepartment(models.Model):
+    police_station = models.CharField(max_length=100, unique=True)
+    street_address = models.CharField(max_length=100)
+    address_city = models.CharField(max_length=50)
+    zip_code = models.CharField(max_length=10)
+    chief_name = models.CharField(max_length=50, blank=True, null=True)
+    phone = models.CharField(max_length=50, blank=True, null=True)
+    chief_email = models.CharField(max_length=90, blank=True, null=True)
+    web_site = models.CharField(max_length=90, blank=True, null=True)
+    pittsburgh_council_district = models.ForeignKey(PGHCouncilDistrict, blank=True, null=True)
+
+    def __str__(self):
+        return 'Police Department: {}'.format(self.police_station)
 
 class Watershed(models.Model):
     watershed_name = models.CharField(max_length=100)
