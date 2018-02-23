@@ -21,7 +21,7 @@ class PoliceDepartment(models.Model):
     zip_code = models.CharField(max_length=10)
     chief_name = models.CharField(max_length=50, blank=True, null=True)
     phone = models.CharField(max_length=50, blank=True, null=True)
-    chief_email = models.CharField(max_length=90, blank=True, null=True, editable=True)
+    chief_email = models.CharField(max_length=90, blank=True, null=True)
     web_site = models.CharField(max_length=90, blank=True, null=True)
 
     def __str__(self):
