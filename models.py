@@ -90,6 +90,20 @@ class StateSenateDistrict(models.Model):
     class Meta:
         verbose_name = "state Senate district"
 
+class StateHouseDistrict(models.Model):
+    district = models.SmallIntegerField()
+    rep_first_name = models.CharField(max_length=50, blank=True, null=True)
+    rep_last_name = models.CharField(max_length=50, blank=True, null=True)
+    rep_suffix = models.CharField(max_length=20, blank=True, null=True)
+    rep_home_county = models.CharField(max_length=30, blank=True, null=True)
+    rep_party = models.CharField(max_length=10, blank=True, null=True)
+
+    def __str__(self):
+        return 'State House District {}'.format(self.district)
+
+    class Meta:
+        verbose_name = "state House district"
+
 class Municipality(models.Model):
     municipality = models.CharField(max_length=100, unique=True)
     cog = models.CharField(verbose_name = "COG", max_length=100)
@@ -100,7 +114,7 @@ class Municipality(models.Model):
     manager_contact = models.CharField(max_length=200, blank=True, null=True)
     school_district = models.CharField(max_length=100, blank=True, null=True)
     # [ ] School district could also be a separate table.
-    state_house_district = models.SmallIntegerField(blank=True, null=True)
+    state_house_district = models.ForeignKey(StateHouseDistrict,verbose_name="state House district",blank=True, null=True)
     state_senate_district = models.ForeignKey(StateSenateDistrict,verbose_name="state Senate district",blank=True, null=True)
     county_council_district = models.SmallIntegerField(blank=True, null=True)
     # [ ] state_house_representative, state_house_representative_party, state_senator, and state_senator_party need to be linked to other tables through the district numbers.
@@ -134,13 +148,6 @@ class CouncilMember(models.Model):
 
     def __str__(self):
         return self.name
-
-class StateHouseDistrict(models.Model):
-    district = models.SmallIntegerField()
-    municipality = models.ForeignKey(Municipality)
-
-    def __str__(self):
-        return '{}'.format(self.district)
 
 class Library(models.Model):
     library_name = models.CharField(max_length=100,unique=True)
