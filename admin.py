@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Municipality, CouncilMember, FireDepartment, PoliceDepartment, EMSDepartment, Library, PGHCouncilDistrict, Watershed
+from .models import Municipality, CouncilMember, FireDepartment, PoliceDepartment, EMSDepartment, Library, PGHCouncilDistrict, Watershed, StateSenateDistrict
 
 
 admin.site.site_header = 'CONNECT Map Bitkeeper'
@@ -21,6 +21,14 @@ class PGHCouncilDistrictAdmin(admin.ModelAdmin):
     ordering = ['council_district']
 
 admin.site.register(PGHCouncilDistrict, PGHCouncilDistrictAdmin)
+
+class StateSenateDistrictAdmin(admin.ModelAdmin):
+    list_display = ['district', 'senator_first_name', 'senator_last_name', 'senator_party']
+
+    search_fields = list_display
+    ordering = ['district']
+
+admin.site.register(StateSenateDistrict, StateSenateDistrictAdmin)
 
 class CouncilMemberInline(admin.TabularInline):
     model = CouncilMember

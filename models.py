@@ -76,6 +76,20 @@ class Watershed(models.Model):
     def __str__(self):
         return self.watershed_name
 
+class StateSenateDistrict(models.Model):
+    district = models.SmallIntegerField()
+    senator_first_name = models.CharField(max_length=50, blank=True, null=True)
+    senator_last_name = models.CharField(max_length=50, blank=True, null=True)
+    senator_suffix = models.CharField(max_length=20, blank=True, null=True)
+    senator_home_county = models.CharField(max_length=30, blank=True, null=True)
+    senator_party = models.CharField(max_length=10, blank=True, null=True)
+
+    def __str__(self):
+        return 'State Senate District {}'.format(self.district)
+
+    class Meta:
+        verbose_name = "state Senate district"
+
 class Municipality(models.Model):
     municipality = models.CharField(max_length=100, unique=True)
     cog = models.CharField(verbose_name = "COG", max_length=100)
@@ -87,7 +101,7 @@ class Municipality(models.Model):
     school_district = models.CharField(max_length=100, blank=True, null=True)
     # [ ] School district could also be a separate table.
     state_house_district = models.SmallIntegerField(blank=True, null=True)
-    state_senate_district = models.SmallIntegerField(blank=True, null=True)
+    state_senate_district = models.ForeignKey(StateSenateDistrict,verbose_name="state Senate district",blank=True, null=True)
     county_council_district = models.SmallIntegerField(blank=True, null=True)
     # [ ] state_house_representative, state_house_representative_party, state_senator, and state_senator_party need to be linked to other tables through the district numbers.
     municipal_address = models.CharField(max_length=100, blank=True, null=True)
@@ -122,13 +136,6 @@ class CouncilMember(models.Model):
         return self.name
 
 class StateHouseDistrict(models.Model):
-    district = models.SmallIntegerField()
-    municipality = models.ForeignKey(Municipality)
-
-    def __str__(self):
-        return '{}'.format(self.district)
-
-class StateSenateDistrict(models.Model):
     district = models.SmallIntegerField()
     municipality = models.ForeignKey(Municipality)
 
