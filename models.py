@@ -106,8 +106,8 @@ class StateHouseDistrict(models.Model):
 
 class Municipality(models.Model):
     municipality = models.CharField(max_length=100, unique=True)
-    cog = models.CharField(verbose_name = "COG", max_length=100)
-    congressional_district = models.SmallIntegerField()
+    cog = models.CharField(verbose_name = "COG", max_length=100, blank=True, null=True)
+    congressional_district = models.SmallIntegerField(blank=True, null=True)
     municipal_web_site = models.CharField(max_length=100, blank=True, null=True)
     mayor = models.CharField(max_length=100, blank=True, null=True)
     manager_or_secretary = models.CharField(max_length=100, blank=True, null=True)
