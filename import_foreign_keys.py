@@ -5,6 +5,34 @@ import csv
 
 from bitkeeper.models import Municipality,EMSDepartment,FireDepartment,PoliceDepartment
 
+def string_to_list(s):
+    return s.split(', ')
+
+#How do you save things to a ManyToManyField?
+#
+#Use the add method for related fields:
+#
+## using Model.object.create is a shortcut to instantiating, then calling save()
+    #myMoveInfo = Movie_Info.objects.create(title='foo', overview='bar')
+    #myMovieGenre = Movie_Info_genre.objects.create(genre='horror')
+    #myMovieInfo.genres.add(myMoveGenre)
+#Unlike modifying other fields, both models must exist in the database prior to doing this, so you must call save before adding the many-to-many relationship. Since add immediately affects the database, you do not need to save afterwards.
+
+# This should also work for foreign keys.
+
+def link_things(list_of_things,model,model_field,target_object,target_field):
+    for thing in list_of_things:
+        try:
+            kwargs = {model_field: thing}
+            item = model.objects.get(**kwargs)
+            if item is not None:
+                #target_object.ems_department = item
+                #setattr(target_object, target_field, item)
+                #target_object.save()
+                getattr(target_object,target_field).add(item)
+        except: #DoesNotExist:
+            print(" *** Unable to find {} in {}. ***".format(thing, model))
+
 def link_foreign_key(foreign_key_string,model,model_field,target_object,target_field):
     foreign_keys = foreign_key_string.split(', ')
     for foreign_key in foreign_keys:
