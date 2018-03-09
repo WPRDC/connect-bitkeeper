@@ -3,7 +3,7 @@
 #   >>> exec(open('bitkeeper/import_foreign_keys.py').read())
 import csv
 
-from bitkeeper.models import Municipality,EMSDepartment,FireDepartment,PoliceDepartment,StateSenateDistrict,StateHouseDistrict
+from bitkeeper.models import Municipality,EMSDepartment,FireDepartment,PoliceDepartment,StateSenateDistrict,StateHouseDistrict,Watershed
 
 def string_to_list(s):
     return s.split(', ')
@@ -61,11 +61,11 @@ with open('bitkeeper/data/municipality.csv') as csvfile:
         #print(row['ems_department'])
         link_things(string_to_list(row['state_senate_district']),StateSenateDistrict,'district',municipality,'state_senate_district')
         link_things(string_to_list(row['state_house_district']),StateHouseDistrict,'district',municipality,'state_house_district')
+        link_things(string_to_list(row['watershed']),Watershed,'watershed_name',municipality,'watershed')
         #link_things(string_to_list(row['ems_department']),EMSDepartment,'name',municipality,'ems_department')
         link_foreign_key(row['ems_department'],EMSDepartment,'name',municipality,'ems_department')
         ##fds_by_muni[municipality].append(row['fire_department'])
         link_things(string_to_list(row['fire_department']),FireDepartment,'name',municipality,'fire_department')
-        link_things(string_to_list(row['police_station']),PoliceDepartment,'police_station',municipality,'police_department')
         link_foreign_key(row['police_station'],PoliceDepartment,'police_station',municipality,'police_department')
         #try:
         #    ems = EMSDepartment.objects.get(name=row['ems_department'])
