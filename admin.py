@@ -43,9 +43,21 @@ class CouncilMemberInline(admin.TabularInline):
 
 class MunicipalityAdmin(admin.ModelAdmin):
     inlines = [CouncilMemberInline]
-    list_display = ['municipality', 'cog', 'congressional_district','municipal_web_site']
+    fields = ['municipality', 'state_senate_district','state_house_district','fire_department','ems_department','police_department','watershed']
+    list_display = ['municipality','state_sen_district','state_rep_district','fire_dept','ems_department','police_department','watersheds']
 
-    search_fields = list_display
+    def state_sen_district(self, obj):
+        return ", ".join([str(d.district) for d in obj.state_senate_district.all()])
+    def state_rep_district(self, obj):
+        return ", ".join([str(d.district) for d in obj.state_house_district.all()])
+    def fire_dept(self, obj):
+        return ", ".join([str(fd.name) for fd in obj.fire_department.all()])
+    def ems_dept(self, obj):
+        return ", ".join([str(ems.name) for ems in obj.ems_department.all()])
+    def watersheds(self, obj):
+        return ", ".join([str(w.watershed_name) for w in obj.watershed.all()])
+
+    search_fields = fields
     ordering = ['municipality']
 
 admin.site.register(Municipality, MunicipalityAdmin)
