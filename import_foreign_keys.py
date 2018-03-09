@@ -21,6 +21,7 @@ def string_to_list(s):
 # This should also work for foreign keys.
 
 def link_things(list_of_things,model,model_field,target_object,target_field):
+    # This imports many-to-many fields (and not foreign keys).
     for thing in list_of_things:
         try:
             kwargs = {model_field: thing}
@@ -34,6 +35,7 @@ def link_things(list_of_things,model,model_field,target_object,target_field):
             print(" *** Unable to find {} in {}. ***".format(thing, model))
 
 def link_foreign_key(foreign_key_string,model,model_field,target_object,target_field):
+    # This function imports foreign keys (but not many-to-many fields).
     foreign_keys = foreign_key_string.split(', ')
     for foreign_key in foreign_keys:
         try:
