@@ -48,6 +48,9 @@ def link_foreign_key(foreign_key_string,model,model_field,target_object,target_f
 
 with open('bitkeeper/data/municipality.csv') as csvfile:
     reader = csv.DictReader(csvfile)
+    ##fds_by_muni = defaultdict(list) # Idea for accumulating ManyToMany relations in a narrow format; this
+    ## is not needed yet since municipality.csv uses ", " delimited lists in single cells at present for
+    ## some things (as a workaround). 
     for row in reader:
         # The header row values become your keys
         #suite_name = row['SuiteName']
@@ -58,6 +61,7 @@ with open('bitkeeper/data/municipality.csv') as csvfile:
         #print(row['ems_department'])
         link_things(string_to_list(row['ems_department']),EMSDepartment,'name',municipality,'ems_department')
         #link_foreign_key(row['ems_department'],EMSDepartment,'name',municipality,'ems_department')
+        ##fds_by_muni[municipality].append(row['fire_department'])
         link_things(string_to_list(row['fire_department']),FireDepartment,'name',municipality,'fire_department')
         link_things(string_to_list(row['police_station']),PoliceDepartment,'police_station',municipality,'police_department')
         #link_foreign_key(row['police_station'],PoliceDepartment,'police_station',municipality,'police_department')
@@ -69,4 +73,7 @@ with open('bitkeeper/data/municipality.csv') as csvfile:
         #except: #DoesNotExist:
         #    print(" *** Unable to find {} in EMSDepartment. ***".format(row['ems_department']))
 
+## Process ManyToManyFields:
+##for muni,fd_list in fds_by_muni.items():
+##    link_things(fd_list,FireDepartment,'name',municipality,'fire_department')
 
