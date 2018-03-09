@@ -13,7 +13,7 @@ class FireDepartment(models.Model):
     longitude = models.FloatField(blank=True, null=True)
 
     def __str__(self):
-        return 'Fire Department: {}'.format(self.name)
+        return '{}'.format(self.name)
 
 class PGHCouncilDistrict(models.Model):
     council_district = models.SmallIntegerField(unique=True,primary_key=True)
@@ -29,7 +29,7 @@ class PGHCouncilDistrict(models.Model):
     # Pittsburgh council district.
 
     def __str__(self):
-        return 'PGH Council District {}'.format(self.council_district)
+        return '{}'.format(self.council_district)
 
     class Meta:
         verbose_name = "PGH council district"
@@ -50,7 +50,7 @@ class EMSDepartment(models.Model):
         verbose_name = "EMS department"
 
     def __str__(self):
-        return 'EMS Department: {}'.format(self.name)
+        return '{}'.format(self.name)
 
 class PoliceDepartment(models.Model):
     police_station = models.CharField(max_length=100, unique=True)
@@ -64,7 +64,7 @@ class PoliceDepartment(models.Model):
     pittsburgh_council_district = models.ForeignKey(PGHCouncilDistrict, blank=True, null=True)
 
     def __str__(self):
-        return 'Police Department: {}'.format(self.police_station)
+        return '{}'.format(self.police_station)
 
 class Watershed(models.Model):
     watershed_name = models.CharField(max_length=100)
@@ -85,7 +85,7 @@ class StateSenateDistrict(models.Model):
     senator_party = models.CharField(max_length=10, blank=True, null=True)
 
     def __str__(self):
-        return 'State Senate District {}'.format(self.district)
+        return '{}'.format(self.district)
 
     class Meta:
         verbose_name = "state Senate district"
@@ -99,7 +99,7 @@ class StateHouseDistrict(models.Model):
     rep_party = models.CharField(max_length=10, blank=True, null=True)
 
     def __str__(self):
-        return 'State House District {}'.format(self.district)
+        return '{}'.format(self.district)
 
     class Meta:
         verbose_name = "state House district"
