@@ -4,6 +4,7 @@ from . import views
 
 urlpatterns = [
 #    url(r'^$', views.index, name='index'),
-
-#    url(r'^(?P<resource_id>[^/]+)/(?P<field>.*)/(?P<search_term>.*)$', views.results, name='results'),
+    url(r'^$', views.index, name='index'), #/bitkeeper goes here.
+    #url(r'data$', views.data, name='data'),
+    #    url(r'^(?P<resource_id>[^/]+)/(?P<field>.*)/(?P<search_term>.*)$', views.results, name='results'),
     ]
