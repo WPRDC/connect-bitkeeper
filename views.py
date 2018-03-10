@@ -5,7 +5,44 @@ from django.shortcuts import render
 
 from .models import FireDepartment, PoliceDepartment
 #from django.template import loader
-#from django.http import HttpResponse
+from django.http import HttpResponse
+import csv
+from bitkeeper import models
+
+def keep(field):
+    if field.get_internal_type() == 'ForeignKey':
+        return not field.one_to_many
+    return True
+
+def csv_view(request,table_name):
+    # Create the HttpResponse object with the appropriate CSV header.
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format(table_name)
+
+    writer = csv.writer(response)
+    target_table = getattr(models, table_name)
+
+    skipped_types = ['ForeignKey']
+    fields = [f for f in target_table._meta.get_fields()]
+    print(fields)
+    print(dir(fields[0]))
+    for f in fields:
+        print("{}, many_to_many = {}, many_to_one = {}, one_to_many = {}, get_internal_type = {}".format(f.name, f.many_to_many, f.one_to_one, f.one_to_many, f.get_internal_type()))
+        try:
+            print("      f.remote_field = {}".format(f.remote_field))
+        except:
+            pass
+    field_names = [f.name for f in target_table._meta.get_fields() if keep(f)]
+    print(field_names)
+    writer.writerow(field_names) # Write CSV file header
+    for obj in target_table.objects.all():
+        row = []
+        for field in fields:
+            if keep(field):
+                row.append(getattr(obj, field.name))
+        writer.writerow(row)
+
+    return response
 
 def index(request):
     app_name = 'bitkeeper'
