@@ -43,7 +43,6 @@ class CouncilMemberInline(admin.TabularInline):
 
 class MunicipalityAdmin(admin.ModelAdmin):
     inlines = [CouncilMemberInline]
-    fields = ['municipality', 'state_senate_district','state_house_district','fire_department','ems_department','police_department','watershed']
     list_display = ['municipality','state_sen_district','state_rep_district','fire_dept','ems_department','police_department','watersheds']
 
     def state_sen_district(self, obj):
@@ -57,7 +56,7 @@ class MunicipalityAdmin(admin.ModelAdmin):
     def watersheds(self, obj):
         return ", ".join([str(w.watershed_name) for w in obj.watershed.all()])
 
-    search_fields = fields
+    search_fields = ['municipality', 'state_senate_district','state_house_district','fire_department','ems_department','police_department','watershed']
     ordering = ['municipality']
 
 admin.site.register(Municipality, MunicipalityAdmin)
