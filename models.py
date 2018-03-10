@@ -142,7 +142,7 @@ class Municipality(models.Model):
         verbose_name_plural = "municipalities"
 
     def __str__(self):
-        return 'Municipality: {}'.format(self.municipality)
+        return '{}'.format(self.municipality)
 
 class CouncilMember(models.Model):
     name = models.CharField(max_length=100)
