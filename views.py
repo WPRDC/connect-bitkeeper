@@ -39,7 +39,11 @@ def csv_view(request,table_name):
         row = []
         for field in fields:
             if keep(field):
-                row.append(getattr(obj, field.name))
+                if field.get_internal_type() == 'ManyToManyField' and field.many_to_many:
+                    qset = getattr(obj, field.name).all() # This is a queryset
+                    row.append(', '.join([str(q) for q in qset]))
+                else:
+                    row.append(getattr(obj, field.name))
         writer.writerow(row)
 
     return response
