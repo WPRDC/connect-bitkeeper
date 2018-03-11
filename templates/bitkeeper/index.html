@@ -1,0 +1,17 @@
+<html>
+
+    <body>
+        <h2>Data statistics</h2>
+        <b>Table name, Number of rows</b>
+        {% for row in table_stats %}
+            {{ row }}<br>
+        {% endfor %}
+        <hr>
+        <h2>Data download options</h2>
+        <ul>Download data tables as CSV files
+        {% for model in table_names %}
+            <li><a href="/bitkeeper/{{ model }}/csv">Download {{ model }} data</a></li>
+        {% endfor %}
+        </ul>
+    </body>
+</html>

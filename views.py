@@ -53,18 +53,14 @@ def index(request):
     all_models = apps.get_app_config(app_name).get_models()
 
     table_names = []
-    tables = [] 
     table_stats = []
     for model in all_models:
-        table_names.append(model._meta.db_table)
+        table_names.append(model.__name__) #model._meta.object_name)
         all_objects = model.objects.all()
-        tables.append(all_objects)
-        table_stats.append([model._meta.db_table, len(all_objects)])
-        print(dir(model))
+        table_stats.append([model.__name__, len(all_objects)])
 
     print(table_stats)
-    fds = FireDepartment.objects.order_by('name')
-    context = {'fire_departments': fds, 'table_stats': table_stats, 'tables': tables}
+    context = {'table_stats': table_stats, 'table_names': table_names}
     return render(request, 'bitkeeper/index.html', context)
     #template = loader.get_template('index.html')
 
