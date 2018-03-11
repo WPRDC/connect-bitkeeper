@@ -2,7 +2,7 @@
 
     <body>
         <h2>Data statistics</h2>
-        <b>Table name, Number of rows</b>
+        <b>Table name, Number of rows</b><br>
         {% for row in table_stats %}
             {{ row }}<br>
         {% endfor %}
@@ -12,6 +12,12 @@
         {% for model in table_names %}
             <li><a href="/bitkeeper/{{ model }}/csv">Download {{ model }} data</a></li>
         {% endfor %}
+        </ul>
+        <hr>
+        <ul>To do
+            <li>Push this button to update all CONNECT data on the WPRDC data portal.
+            <li>Serialize models to JSON/list_of_dicts, and then use some existing code to push it to CKAN.
+            <li>List and link to all N/A values.
         </ul>
     </body>
 </html>
