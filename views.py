@@ -34,16 +34,26 @@ def csv_view(request,table_name):
             pass
     field_names = [f.name for f in target_table._meta.get_fields() if keep(f)]
     print(field_names)
-    writer.writerow(field_names) # Write CSV file header
-    for obj in target_table.objects.all():
+
+    warning_issued = []
+    for i,obj in enumerate(target_table.objects.all()):
         row = []
         for field in model_fields:
             if keep(field):
                 if field.get_internal_type() == 'ManyToManyField' and field.many_to_many:
-                    qset = getattr(obj, field.name).all() # This is a queryset
-                    row.append(', '.join([str(q) for q in qset]))
+                    try:
+                        qset = getattr(obj, field.name).all() # This is a queryset
+                        row.append(', '.join([str(q) for q in qset]))
+                    except AttributeError:
+                        print(field.related_model())
+                        if field.name not in warning_issued:
+                            print("Unable to find the field {} in {} object".format(field.name, target_table))
+                            warning_issued.append(field.name)
                 else:
                     row.append(getattr(obj, field.name))
+        if i == 0:
+            field_names_to_output = [n for n in field_names if n not in warning_issued]
+            writer.writerow(field_names_to_output) # Write CSV file header
         writer.writerow(row)
 
     return response
