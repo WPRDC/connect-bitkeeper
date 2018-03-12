@@ -23,10 +23,10 @@ def csv_view(request,table_name):
     target_table = getattr(models, table_name)
 
     skipped_types = ['ForeignKey']
-    fields = [f for f in target_table._meta.get_fields()]
-    print(fields)
-    print(dir(fields[0]))
-    for f in fields:
+    model_fields = [f for f in target_table._meta.get_fields()]
+    print(model_fields)
+    print(dir(model_fields[0]))
+    for f in model_fields:
         print("{}, many_to_many = {}, many_to_one = {}, one_to_many = {}, get_internal_type = {}".format(f.name, f.many_to_many, f.one_to_one, f.one_to_many, f.get_internal_type()))
         try:
             print("      f.remote_field = {}".format(f.remote_field))
@@ -37,7 +37,7 @@ def csv_view(request,table_name):
     writer.writerow(field_names) # Write CSV file header
     for obj in target_table.objects.all():
         row = []
-        for field in fields:
+        for field in model_fields:
             if keep(field):
                 if field.get_internal_type() == 'ManyToManyField' and field.many_to_many:
                     qset = getattr(obj, field.name).all() # This is a queryset
