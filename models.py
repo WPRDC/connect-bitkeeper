@@ -77,7 +77,7 @@ class Watershed(models.Model):
         return self.watershed_name
 
 class StateSenateDistrict(models.Model):
-    district = models.SmallIntegerField()
+    district = models.SmallIntegerField(unique=True)
     senator_first_name = models.CharField(max_length=50, blank=True, null=True)
     senator_last_name = models.CharField(max_length=50, blank=True, null=True)
     senator_suffix = models.CharField(max_length=20, blank=True, null=True)
@@ -91,7 +91,7 @@ class StateSenateDistrict(models.Model):
         verbose_name = "state Senate district"
 
 class StateHouseDistrict(models.Model):
-    district = models.SmallIntegerField()
+    district = models.SmallIntegerField(unique=True)
     rep_first_name = models.CharField(max_length=50, blank=True, null=True)
     rep_last_name = models.CharField(max_length=50, blank=True, null=True)
     rep_suffix = models.CharField(max_length=20, blank=True, null=True)
