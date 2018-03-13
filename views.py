@@ -263,13 +263,34 @@ def index(request):
 
     table_names = []
     table_stats = []
+    na_rows = []
+    na_models = []
+
+    pks_added = []
     for model in all_models:
         table_names.append(model.__name__) #model._meta.object_name)
         all_objects = model.objects.all()
         table_stats.append([model.__name__, len(all_objects)])
+        for field in model._meta.get_fields():
+            if field.name not in ['id']:
+                field_type_name = field.get_internal_type()
+                print(field.name,field_type_name)
+                if field_type_name in ['SmallIntegerField', 'IntegerField', 'FloatField', 'DecimalField']:
+                    search_kwargs = {field.name: 0}
+                else:
+                    search_kwargs = {field.name: 'N/A'}
+                if field_type_name not in ['ForeignKey', 'ManyToManyField']:
+                    for row in model.objects.filter(**search_kwargs):
+                        if row.pk not in pks_added:
+                            na_rows.append(row)
+                            na_models.append(model.__name__)
+                            pks_added.append(row.pk)
 
+    nas = zip(na_rows, na_models)
     print(table_stats)
-    context = {'table_stats': table_stats, 'table_names': table_names}
+
+    context = {'table_stats': table_stats, 'table_names': table_names,
+            'nas': nas }
     return render(request, 'bitkeeper/index.html', context)
     #template = loader.get_template('index.html')
 
