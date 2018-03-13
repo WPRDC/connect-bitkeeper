@@ -1,13 +1,17 @@
 from django.shortcuts import render
-
+from django.db import models as django_models
 #from django.contrib.auth.decorators import user_passes_test
 #from django.shortcuts import render_to_response
 
 from .models import FireDepartment, PoliceDepartment
 #from django.template import loader
 from django.http import HttpResponse
-import csv
+import sys, csv, json
 from bitkeeper import models
+from pprint import pprint
+
+from bitkeeper.parameters.local_parameters import BITKEEPER_SETTINGS_FILE as SETTINGS_FILE
+
 from marshmallow import fields, pre_load, post_load
 sys.path.insert(0, '/Users/drw/WPRDC/etl-dev/wprdc-etl') # A path that we need to import code from
 import pipeline as pl
@@ -15,6 +19,82 @@ import pipeline as pl
 class SchemaAtom(pl.BaseSchema):
     class Meta:
         ordered = True
+
+def write_to_csv(filename,list_of_dicts,keys):
+    with open(filename, 'w') as output_file:
+        dict_writer = csv.DictWriter(output_file, keys, extrasaction='ignore', lineterminator='\n')
+        dict_writer.writeheader()
+        dict_writer.writerows(list_of_dicts)
+
+def send_data_to_pipeline(table_name,schema,list_of_dicts,fields,primary_keys,chunk_size=5000):
+    # Taken from github.com/WPRDC/stop-in-the-name-of-data.
+
+    specify_resource_by_name = True
+    if specify_resource_by_name:
+        kwargs = {'resource_name': 'CONNECT data: {}'.format(table_name)}
+    #else:
+        #kwargs = {'resource_id': ''}
+
+    # Synthesize virtual file to send to the FileConnector
+    from tempfile import NamedTemporaryFile
+    ntf = NamedTemporaryFile()
+
+    # Save the file path
+    target = ntf.name
+    field_names = [f['id'] for f in fields]
+    write_to_csv(target,list_of_dicts,field_names)
+
+    # Testing temporary named file:
+    #ntf.seek(0)
+    #with open(target,'r') as g:
+    #    print(g.read())
+
+    ntf.seek(0)
+    server = "secret-cool-data"
+    # Code below stolen from prime_ckan/*/open_a_channel() but really from utility_belt/gadgets
+    #with open(os.path.dirname(os.path.abspath(__file__))+'/ckan_settings.json') as f: # The path of this file needs to be specified.
+    with open(SETTINGS_FILE) as f:
+        settings = json.load(f)
+    site = settings['loader'][server]['ckan_root_url']
+    package_id = settings['loader'][server]['package_id']
+
+    print("Preparing to pipe data from {} to resource {} package ID {} on {}".format(target,list(kwargs.values())[0],package_id,site))
+    #time.sleep(1.0)
+
+
+    super_pipeline = pl.Pipeline('yet_another_pipeline',
+                                      'Pipeline for Bitkeeper Data',
+                                      log_status=False,
+                                      settings_file=SETTINGS_FILE,
+                                      settings_from_file=True,
+                                      start_from_chunk=0,
+                                      chunk_size=chunk_size
+                                      ) \
+        .connect(pl.FileConnector, target, encoding='utf-8') \
+        .extract(pl.CSVExtractor, firstline_headers=True) \
+        .schema(schema) \
+        .load(pl.CKANDatastoreLoader, server,
+              fields=fields,
+              #package_id=package_id,
+              #resource_id=resource_id,
+              #resource_name=resource_name,
+              key_fields=primary_keys,
+              method='upsert',
+              **kwargs).run()
+    log = open('uploaded.log', 'w+')
+    if specify_resource_by_name:
+        message = "Piped data to {}".format(kwargs['resource_name'])
+        print(message)
+        log.write("Finished upserting {} at {} \n".format(kwargs['resource_name'],datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+    else:
+        message = "Piped data to {}".format(kwargs['resource_id'])
+        print(message)
+        log.write("Finished upserting {} at {} \n".format(kwargs['resource_id'],datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+    log.close()
+    ntf.close()
+    assert not os.path.exists(target)
+
+    return message
 
 def schema_by_table(table_name):
     print("Generate a Marshmallow schema based on the Model fields")
