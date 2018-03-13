@@ -67,7 +67,7 @@ class PoliceDepartment(models.Model):
         return '{}'.format(self.police_station)
 
 class Watershed(models.Model):
-    watershed_name = models.CharField(max_length=100)
+    watershed_name = models.CharField(max_length=100, unique=True)
     watershed_association = models.CharField(max_length=100,blank=True,null=True)
 
     # [ ] Is it correct that there's one watershed association associated
