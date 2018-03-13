@@ -6,9 +6,10 @@ from django.db import models as django_models
 from .models import FireDepartment, PoliceDepartment
 #from django.template import loader
 from django.http import HttpResponse
-import sys, csv, json
+import os, sys, csv, json, datetime
 from bitkeeper import models
 from pprint import pprint
+from collections import OrderedDict
 
 from bitkeeper.parameters.local_parameters import BITKEEPER_SETTINGS_FILE as SETTINGS_FILE
 
@@ -31,7 +32,7 @@ def send_data_to_pipeline(table_name,schema,list_of_dicts,fields,primary_keys,ch
 
     specify_resource_by_name = True
     if specify_resource_by_name:
-        kwargs = {'resource_name': 'CONNECT data: {}'.format(table_name)}
+        kwargs = {'resource_name': 'CONNECT Data: {}'.format(table_name)}
     #else:
         #kwargs = {'resource_id': ''}
 
@@ -115,7 +116,23 @@ def schema_by_table(table_name):
     #            ordered = True
 
     target_table = getattr(models, table_name) # Fetch the Django model by name
-    model_fields = target_table._meta.get_fields()
+    disordered_model_fields = target_table._meta.get_fields() # This returns the fields 
+    # in an order different from the order they're defined in models.py.
+    print("dmf = {}".format(disordered_model_fields))
+    disordered_model_field_names = [d.name for d in disordered_model_fields]
+
+    disordered_model_fields_by_name = {dmf.name:dmf for dmf in disordered_model_fields}
+
+    print("disordered_model_field_names = {}".format(disordered_model_field_names))
+    model_fields = [] 
+    print("target_table.__dict__ = {}".format(list(target_table.__dict__.keys())))
+
+    for fn in list(target_table.__dict__.keys()):
+        if fn in disordered_model_field_names:
+            field = disordered_model_fields_by_name[fn]
+            model_fields.append(field)
+
+    print("model_fields = {}".format(model_fields))
 
     # The fields will probably need to be pared down in a way similar to
     # that used for generating the CSV fields, so some refactoring is in order.
@@ -124,6 +141,7 @@ def schema_by_table(table_name):
 
     type_to_field = {'AutoField': fields.Integer,
             'CharField': fields.String,
+            'FloatField': fields.Float,
             'SmallIntegerField': fields.Integer,
             'ForeignKey': fields.String,  # Of course, not all
             # foreign keys are strings, but we're going to coerce
@@ -133,7 +151,7 @@ def schema_by_table(table_name):
             }
 
     # To dynamically create a class, do this:   type(name, bases, attributes)
-    attributes = {}
+    attributes = OrderedDict()
     # Here's an example with a class method:
     #    NewClass = type("NewClass", (object,), {
     #        "string_val": "this is val1",
@@ -142,6 +160,7 @@ def schema_by_table(table_name):
     #        "func_val": some_func,
     #        "class_func": some_class_method
     #    }))
+    #SchemaClass = type("ThingSchema", (pl.BaseSchema,), {})
     primary_keys = []
     for field in model_fields:
         if keep(field) and field.get_internal_type() != 'AutoField':
@@ -161,11 +180,20 @@ def schema_by_table(table_name):
                 primary_keys.append(field.name)
                 kwargs['allow_none'] = False
             attributes[field.name] = marshmallow_field(**kwargs) #fields.something(with parameters determined and set here)
+            #setattr(SchemaClass, field.name, property(marshmallow_field(**kwargs)))
 
+    print(" Attributes: ")
     pprint(attributes)
     SchemaClass = type("ThingSchema", (pl.BaseSchema,), attributes)
 
-    fields_to_publish = SchemaClass().serialize_to_ckan_fields()
+    unordered_fields_to_publish = SchemaClass().serialize_to_ckan_fields() # This is a list of dicts encoded for CKAN.
+    fields_to_publish = []
+    for mf in model_fields:
+        for uf in unordered_fields_to_publish:
+            if mf.name == uf['id']:
+                fields_to_publish.append(uf)
+
+    print("  Fields to publish:")
     pprint(fields_to_publish)
     return SchemaClass, fields_to_publish, primary_keys
 
