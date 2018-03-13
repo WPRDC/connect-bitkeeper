@@ -14,10 +14,22 @@
         {% endfor %}
         </ul>
         <hr>
-        <ul>To do
-            <li>Push this button to update all CONNECT data on the WPRDC data portal.
+        <h2>Push data to CKAN</h2>
+        <ul>Update individual tables by clicking the links
+        {% for model in table_names %}
+            <li><a href="/bitkeeper/{{ model }}/push">Update {{ model }} data</a></li>
+        {% endfor %}
+        </ul>
+        <hr>
+        <ul>To Do
+            <li>"Push this button to update all CONNECT data on the WPRDC data portal."
             <li>Serialize models to JSON/list_of_dicts, and then use some existing code to push it to CKAN.
             <li>List and link to all N/A values.
         </ul>
+        <h2>N/A editor</h2>
+        When the base data was initially imported into Bitkeeper, missing values were given the value "N/A". You can edit each of these missing values below. <P>
+        <br>
+        <br>
+        If there really is no value that goes in that field (like the "mayor" field of a municipality that has no mayor), delete "N/A" from that field and save the table row. (Doing this sets the value of that field to null/None).
     </body>
 </html>

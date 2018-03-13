@@ -169,6 +169,41 @@ def schema_by_table(table_name):
     pprint(fields_to_publish)
     return SchemaClass, fields_to_publish, primary_keys
 
+def export_table_to_ckan(request,table_name):
+    try:
+        target_table = getattr(models, table_name)
+    except AttributeError:
+        target_table = None
+        print("Send back a message that that table could not be found.")
+
+    from django.core import serializers
+    data = json.loads(serializers.serialize("json", target_table.objects.all()))
+    #pprint(data)
+
+    # data looks like this:
+    # [{'fields': {'address_city': 'Pittsburgh',
+    #         'contact': '412.237.1890',
+    #         'library_name': 'Allegheny',
+    #         'street_address': '1230 Federal Street',
+    #         'web_site': 'http://www.carnegielibrary.org',
+    #         'zip_code': '15212'},
+    #  'model': 'bitkeeper.library',
+    #  'pk': 46},
+    # {'fields': {'address_city': 'Pittsburgh', [...]
+    list_of_dicts = [d['fields'] for d in data]
+    schema, ckan_fields, primary_keys = schema_by_table(table_name)
+
+    pprint(schema)
+    pprint(ckan_fields)
+    pprint(primary_keys)
+    #message = 'Edit code to send data'
+    message = send_data_to_pipeline(table_name,schema,list_of_dicts,ckan_fields,primary_keys,chunk_size=5000)
+
+
+    context = {'result': '', 'message': message}
+    # [ ] At present, this will just break if the data fails to upsert.
+    return render(request, 'bitkeeper/results.html', context)
+
 def keep(field):
     if field.get_internal_type() == 'ForeignKey':
         return not field.one_to_many
