@@ -8,6 +8,86 @@ from .models import FireDepartment, PoliceDepartment
 from django.http import HttpResponse
 import csv
 from bitkeeper import models
+from marshmallow import fields, pre_load, post_load
+sys.path.insert(0, '/Users/drw/WPRDC/etl-dev/wprdc-etl') # A path that we need to import code from
+import pipeline as pl
+
+class SchemaAtom(pl.BaseSchema):
+    class Meta:
+        ordered = True
+
+def schema_by_table(table_name):
+    print("Generate a Marshmallow schema based on the Model fields")
+
+    # Sample schema:
+    #    class ElectionResultsSchema(pl.BaseSchema):
+    #        line_number = fields.Integer(dump_to="line_number", allow_none=False)
+    #        contest_name = fields.String(allow_none=False)
+    #        # NEVER let any of the key fields have None values. It's just asking for
+    #        # multiplicity problems on upsert.
+    #
+    #        # [Note that since this script is taking data from CSV files, there should be no
+    #        # columns with None values. It should all be instances like [value], [value],, [value],...
+    #        # where the missing value starts as as a zero-length string, which this script
+    #        # is then responsible for converting into something more appropriate.
+    #
+    #        class Meta:
+    #            ordered = True
+
+    target_table = getattr(models, table_name) # Fetch the Django model by name
+    model_fields = target_table._meta.get_fields()
+
+    # The fields will probably need to be pared down in a way similar to
+    # that used for generating the CSV fields, so some refactoring is in order.
+
+    #   [ ] Refactor!
+
+    type_to_field = {'AutoField': fields.Integer,
+            'CharField': fields.String,
+            'SmallIntegerField': fields.Integer,
+            'ForeignKey': fields.String,  # Of course, not all
+            # foreign keys are strings, but we're going to coerce
+            # them to be so for now.
+            'ManyToManyField': fields.String,
+            #django_models.SmallIntegerField(): fields.Integer,
+            }
+
+    # To dynamically create a class, do this:   type(name, bases, attributes)
+    attributes = {}
+    # Here's an example with a class method:
+    #    NewClass = type("NewClass", (object,), {
+    #        "string_val": "this is val1",
+    #        "int_val": 10,
+    #        "__init__": constructor,
+    #        "func_val": some_func,
+    #        "class_func": some_class_method
+    #    }))
+    primary_keys = []
+    for field in model_fields:
+        if keep(field) and field.get_internal_type() != 'AutoField':
+            #for x in dir(field):
+            #    if x[0] != '_':
+            #        try:
+            #            print(x,getattr(field,x))
+            #        except:
+            #            print("You can't just go and print the {} of {}. It's not that simple!".format(x,field))
+            #    print("       internal type for {} in {} = {}".format(field.name,target_table,field.get_internal_type() ))
+            print("       internal type for {} in {} = {}".format(field.name,target_table,field.get_internal_type() ))
+            django_field_type = field.get_internal_type() # This is a string name for the field type.
+            marshmallow_field = type_to_field[django_field_type]
+            kwargs = {}
+            kwargs['allow_none'] = True
+            if field.unique or field.primary_key:
+                primary_keys.append(field.name)
+                kwargs['allow_none'] = False
+            attributes[field.name] = marshmallow_field(**kwargs) #fields.something(with parameters determined and set here)
+
+    pprint(attributes)
+    SchemaClass = type("ThingSchema", (pl.BaseSchema,), attributes)
+
+    fields_to_publish = SchemaClass().serialize_to_ckan_fields()
+    pprint(fields_to_publish)
+    return SchemaClass, fields_to_publish, primary_keys
 
 def keep(field):
     if field.get_internal_type() == 'ForeignKey':
