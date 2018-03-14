@@ -12,6 +12,9 @@ class FireDepartment(models.Model):
     latitude = models.FloatField(blank=True, null=True)
     longitude = models.FloatField(blank=True, null=True)
 
+    class Meta:
+        verbose_name = "fire department"
+
     def __str__(self):
         return '{}'.format(self.name)
 
@@ -28,12 +31,12 @@ class PGHCouncilDistrict(models.Model):
     # multiple police/EMS departments can be in the same
     # Pittsburgh council district.
 
-    def __str__(self):
-        return '{}'.format(self.council_district)
-
     class Meta:
         verbose_name = "Pittsburgh council district"
         verbose_name_plural = "Pittsburgh council districts"
+
+    def __str__(self):
+        return '{}'.format(self.council_district)
 
 class EMSDepartment(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -63,8 +66,12 @@ class PoliceDepartment(models.Model):
     web_site = models.CharField(max_length=90, blank=True, null=True)
     pittsburgh_council_district = models.ForeignKey(PGHCouncilDistrict, blank=True, null=True)
 
+    class Meta:
+        verbose_name = "police department"
+
     def __str__(self):
         return '{}'.format(self.police_station)
+
 
 class Watershed(models.Model):
     watershed_name = models.CharField(max_length=100, unique=True)
@@ -72,6 +79,9 @@ class Watershed(models.Model):
 
     # [ ] Is it correct that there's one watershed association associated
     # with each watershed? Can there be zero?
+
+    class Meta:
+        verbose_name = "watershed"
 
     def __str__(self):
         return self.watershed_name
@@ -84,11 +94,11 @@ class StateSenateDistrict(models.Model):
     senator_home_county = models.CharField(max_length=30, blank=True, null=True)
     senator_party = models.CharField(max_length=10, blank=True, null=True)
 
-    def __str__(self):
-        return '{}'.format(self.district)
-
     class Meta:
         verbose_name = "state Senate district"
+
+    def __str__(self):
+        return '{}'.format(self.district)
 
 class StateHouseDistrict(models.Model):
     district = models.SmallIntegerField(unique=True)
@@ -98,11 +108,11 @@ class StateHouseDistrict(models.Model):
     rep_home_county = models.CharField(max_length=30, blank=True, null=True)
     rep_party = models.CharField(max_length=10, blank=True, null=True)
 
-    def __str__(self):
-        return '{}'.format(self.district)
-
     class Meta:
         verbose_name = "state House district"
+
+    def __str__(self):
+        return '{}'.format(self.district)
 
 class Municipality(models.Model):
     municipality = models.CharField(max_length=100, unique=True)
@@ -139,6 +149,7 @@ class Municipality(models.Model):
     watershed = models.ManyToManyField(Watershed,blank=True)
 
     class Meta:
+        verbose_name_plural = "municipality"
         verbose_name_plural = "municipalities"
 
     def __str__(self):
@@ -147,6 +158,9 @@ class Municipality(models.Model):
 class CouncilMember(models.Model):
     name = models.CharField(max_length=100)
     municipality = models.ForeignKey(Municipality)
+
+    class Meta:
+        verbose_name = "council member"
 
     def __str__(self):
         return self.name
@@ -163,8 +177,10 @@ class Library(models.Model):
     web_site = models.CharField(max_length=90, blank=True, null=True)
     contact = models.CharField(max_length=100)
 
+    class Meta:
+        verbose_name_plural = "library"
+        verbose_name_plural = "libraries"
+
     def __str__(self):
         return 'Library: {}'.format(self.library_name)
 
-    class Meta:
-        verbose_name_plural = "libraries"
