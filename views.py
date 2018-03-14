@@ -183,6 +183,13 @@ def schema_by_table(table_name):
 
     return SchemaClass, fields_to_publish, primary_keys
 
+def serialized_value(xs):
+    if len(xs) == 0:
+        return None
+    if len(xs) == 1:
+        return xs[0]
+    return '|'.join([str(x) for x in xs])
+
 def export_table_to_ckan(request,table_name):
     try:
         target_table = getattr(models, table_name)
@@ -204,7 +211,54 @@ def export_table_to_ckan(request,table_name):
     #  'model': 'bitkeeper.library',
     #  'pk': 46},
     # {'fields': {'address_city': 'Pittsburgh', [...]
-    list_of_dicts = [d['fields'] for d in data]
+    raw_list_of_dicts = [d['fields'] for d in data]
+    # This initial list of dicts has just indices for 
+    # foreign-key fields and lists of indices for 
+    # many-to-many fields. It's necessary to convert those
+    # into values to make the exported data more human-readable.
+    model_fields = target_table._meta.get_fields()
+    model_field_by_name = {f.name:f for f in model_fields}
+
+    list_of_dicts = []
+    for d in raw_list_of_dicts:
+        baked_d = dict(d)
+        for k,v in d.items():
+            # If the k field is a foreign key or a many-to-many field
+            # take v as an index and look up the value or values in
+            # the referenced model.
+            model_field = model_field_by_name[k]
+            if model_field.get_internal_type() in ['ForeignKey','ManyToManyField']:
+                if model_field.get_internal_type() == 'ManyToManyField' and model_field.many_to_many and model_field.remote_field.get_internal_type() == 'ManyToManyField':
+                    list_of_indices = v
+                elif model_field.get_internal_type() == 'ForeignKey':
+                    list_of_indices = [v]
+
+                actual_values = [] 
+                if list_of_indices not in [None, [], [None]]:
+                    for index in list_of_indices:
+                        print("pk = {}".format(index))
+                        related_row = model_field.related_model.objects.get(pk=index)
+                        actual_values.append(str(related_row))
+
+                baked_d[k] = serialized_value(actual_values)
+        list_of_dicts.append(baked_d)
+
+    # This is a field (from State Senate District) that we want to not export to CKAN
+    #municipality, many_to_many = True, many_to_one = False, one_to_many = False, get_internal_type = ManyToManyField
+    #      f.remote_field = bitkeeper.Municipality.state_senate_district
+
+    # But here's what it looks like in Municipality:
+    #state_senate_district, many_to_many = True, many_to_one = False, one_to_many = False, get_internal_type = ManyToManyField
+    #      f.remote_field = <ManyToManyRel: bitkeeper.municipality> ==> type = ManyToManyField
+    #      f.related_model = <class 'bitkeeper.models.StateSenateDistrict'>
+
+    # The distinguishing characteristic is what the remote_field field looks like.
+
+    # One that is still getting through that we would like to suppress:
+    # municipality, many_to_many = True, many_to_one = False, one_to_many = False, get_internal_type = ManyToManyField
+    #  f.remote_field = bitkeeper.Municipality.fire_department ==> type = ManyToManyField
+    #  f.related_model = <class 'bitkeeper.models.Municipality'>
+
     schema, ckan_fields, primary_keys = schema_by_table(table_name)
 
     pprint(schema)
