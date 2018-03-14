@@ -6,7 +6,7 @@ from django.db import models as django_models
 from .models import FireDepartment, PoliceDepartment
 #from django.template import loader
 from django.http import HttpResponse
-import os, sys, csv, json, datetime
+import os, sys, csv, json, datetime, ckanapi
 from bitkeeper import models
 from pprint import pprint
 from collections import OrderedDict
@@ -20,6 +20,25 @@ import pipeline as pl
 class SchemaAtom(pl.BaseSchema):
     class Meta:
         ordered = True
+
+def get_package_parameter(site,package_id,parameter,API_key=None):
+    try:
+        ckan = ckanapi.RemoteCKAN(site, apikey=API_key)
+        metadata = ckan.action.package_show(id=package_id)
+        desired_string = metadata[parameter]
+        #print("The parameter {} for this package is {}".format(parameter,metadata[parameter]))
+    except:
+        raise RuntimeError("Unable to obtain package parameter '{}' for package with ID {}".format(parameter,package_id))
+
+    return desired_string
+
+def find_resource_id(site,package_id,resource_name,API_key=None):
+    # Get the resource ID given the package ID and resource name.
+    resources = get_package_parameter(site,package_id,'resources',API_key)
+    for r in resources:
+        if r['name'] == resource_name:
+            return r['id']
+    return None
 
 def write_to_csv(filename,list_of_dicts,keys):
     with open(filename, 'w') as output_file:
