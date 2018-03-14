@@ -24,10 +24,11 @@
         <ul>To Do
             <li>"Push this button to update all CONNECT data on the WPRDC data portal."
                 <ul><li>A table could be added to track update timestamps, but then some exception would need to be made to not publish certain tables.</li></ul>
-            <li>Serialize models to JSON/list_of_dicts, and then use some existing code to push it to CKAN.
+            <li>Put control panel under administrator-only access 
+            <li>Add Skeleton CSS
         </ul>
         <h2>N/A editor</h2>
-        When the base data was initially imported into Bitkeeper, missing values were given the value "N/A". In the table below, you can click the corresponding link to edit each of these missing values. <P>
+        When the base data was initially imported into Bitkeeper, missing values (in partially filled columns) were given the value "N/A". In the table below, you can click the corresponding link to edit each of these missing values. <P>
         <ul>
         {% for na_row, na_model in nas %}
             <li><a href="/admin/bitkeeper/{{ na_model | lower }}/{{ na_row.pk }}/change">Edit this row</a> {{na_model}}: {{ na_row }}</li>

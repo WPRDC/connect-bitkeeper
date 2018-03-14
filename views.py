@@ -135,12 +135,11 @@ def send_data_to_pipeline(resource_name_base,table_name,schema,list_of_dicts,fie
     return message
 
 def schema_by_table(table_name,fields_to_include):
+    """This function generates a Marshmallow schema based on the Django app's model fields."""
+
     # Originally this generation of schemas was including the wrong end of m2m fields,
     # which should not be in the schema. The addition parameter fields_to_include
     # was added for filtering out these other fields.
-
-    print("Generate a Marshmallow schema based on the Model fields")
-    
 
     # Sample schema:
     #    class ElectionResultsSchema(pl.BaseSchema):
@@ -159,15 +158,12 @@ def schema_by_table(table_name,fields_to_include):
 
     target_table = getattr(models, table_name) # Fetch the Django model by name
     disordered_model_fields = target_table._meta.get_fields() # This returns the fields 
-    # in an order different from the order they're defined in models.py.
-
-#                if field.get_internal_type() == 'ManyToManyField' and field.many_to_many:
-
-
-    # The fields will probably need to be pared down in a way similar to
-    # that used for generating the CSV fields, so some refactoring could be done.
-
-    #   [ ] Refactor!
+    # in an order that might be different from the order they're defined in models.py
+    # (but it seems to be the same as the order that a previous version of the code
+    # created). Basically it's weird things like the ManyToOne relations (Council 
+    # Members in Municipality) and the id field that appear in different
+    # places (either before or after all the rest of the fields), so this distinction
+    # is not important at this point.
 
     filtered_model_fields = [f for f in disordered_model_fields if f in fields_to_include]
 
@@ -202,7 +198,6 @@ def schema_by_table(table_name,fields_to_include):
             #        except:
             #            print("You can't just go and print the {} of {}. It's not that simple!".format(x,field))
             #    print("       internal type for {} in {} = {}".format(field.name,target_table,field.get_internal_type() ))
-            print("       internal type for {} in {} = {}".format(field.name,target_table,field.get_internal_type() ))
             django_field_type = field.get_internal_type() # This is a string name for the field type.
             marshmallow_field = type_to_field[django_field_type]
             kwargs = {}
@@ -218,6 +213,8 @@ def schema_by_table(table_name,fields_to_include):
 
     SchemaClass = type("ThingSchema", (pl.BaseSchema,), attributes)
 
+
+
     unordered_fields_to_publish = SchemaClass().serialize_to_ckan_fields() # This is a list of dicts encoded for CKAN.
     fields_to_publish = []
     for mf in filtered_model_fields:
@@ -225,8 +222,11 @@ def schema_by_table(table_name,fields_to_include):
             if mf.name == uf['id']:
                 fields_to_publish.append(uf)
 
-
     assert(len(fields_to_publish) == len(fields_to_include))
+    # [ ] Since this assertion has not been violated yet, it seems quite likely that
+    # fields_to_publish is identical to fields_to_include and that the former
+    # could be eliminated here.
+
 
     return SchemaClass, fields_to_publish, primary_keys
 
@@ -277,7 +277,6 @@ def export_table_to_ckan(request,table_name):
             model_field = model_field_by_name[k]
             if model_field not in fields_to_publish:
                 fields_to_publish.append(model_field)
-            print("model_field = {}, k = {}, v = {}, internal_type = {}".format(model_field, k, v, model_field.get_internal_type()))
             if model_field.get_internal_type() in ['ForeignKey','ManyToManyField']:
                 if model_field.get_internal_type() == 'ManyToManyField' and model_field.many_to_many and model_field.remote_field.get_internal_type() == 'ManyToManyField': # This
                     # if clause is long because I was trying to filter out the other end of the Municipality-StateSentateDistrict.district many-to-many field
@@ -289,7 +288,6 @@ def export_table_to_ckan(request,table_name):
                 actual_values = [] 
                 if list_of_indices not in [None, [], [None]]:
                     for index in list_of_indices:
-                        print("pk = {}".format(index))
                         related_row = model_field.related_model.objects.get(pk=index)
                         actual_values.append(str(related_row))
 
@@ -314,9 +312,6 @@ def export_table_to_ckan(request,table_name):
 
     schema, ckan_fields, primary_keys = schema_by_table(table_name,fields_to_publish)
 
-    pprint(schema)
-    pprint(ckan_fields)
-    pprint(primary_keys)
     #message = 'Edit code to send data'
     resource_name_base = target_table._meta.verbose_name_plural
     resource_name_base = resource_name_base[0].upper() + resource_name_base[1:]
@@ -340,18 +335,8 @@ def csv_view(request,table_name):
     writer = csv.writer(response)
     target_table = getattr(models, table_name)
 
-    skipped_types = ['ForeignKey']
     model_fields = [f for f in target_table._meta.get_fields()]
-    print(model_fields)
-    print(dir(model_fields[0]))
-    for f in model_fields:
-        print("{}, many_to_many = {}, many_to_one = {}, one_to_many = {}, get_internal_type = {}".format(f.name, f.many_to_many, f.one_to_one, f.one_to_many, f.get_internal_type()))
-        try:
-            print("      f.remote_field = {}".format(f.remote_field))
-        except:
-            pass
     field_names = [f.name for f in target_table._meta.get_fields() if keep(f)]
-    print(field_names)
 
     warning_issued = []
     for i,obj in enumerate(target_table.objects.all()):
@@ -397,7 +382,6 @@ def index(request):
         for field in model._meta.get_fields():
             if field.name not in ['id']:
                 field_type_name = field.get_internal_type()
-                print(field.name,field_type_name)
                 if field_type_name in ['SmallIntegerField', 'IntegerField', 'FloatField', 'DecimalField']:
                     search_kwargs = {field.name: 0}
                 else:
