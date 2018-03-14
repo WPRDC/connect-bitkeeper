@@ -97,8 +97,13 @@ def send_data_to_pipeline(resource_name_base,table_name,schema,list_of_dicts,fie
 
     return message
 
-def schema_by_table(table_name):
+def schema_by_table(table_name,fields_to_include):
+    # Originally this generation of schemas was including the wrong end of m2m fields,
+    # which should not be in the schema. The addition parameter fields_to_include
+    # was added for filtering out these other fields.
+
     print("Generate a Marshmallow schema based on the Model fields")
+    
 
     # Sample schema:
     #    class ElectionResultsSchema(pl.BaseSchema):
@@ -127,6 +132,8 @@ def schema_by_table(table_name):
 
     #   [ ] Refactor!
 
+    filtered_model_fields = [f for f in disordered_model_fields if f in fields_to_include]
+
     type_to_field = {'AutoField': fields.Integer,
             'CharField': fields.String,
             'FloatField': fields.Float,
@@ -149,7 +156,7 @@ def schema_by_table(table_name):
     #        "class_func": some_class_method
     #    }))
     primary_keys = []
-    for field in disordered_model_fields:
+    for field in filtered_model_fields:
         if keep(field) and field.get_internal_type() != 'AutoField':
             #for x in dir(field):
             #    if x[0] != '_':
@@ -176,10 +183,13 @@ def schema_by_table(table_name):
 
     unordered_fields_to_publish = SchemaClass().serialize_to_ckan_fields() # This is a list of dicts encoded for CKAN.
     fields_to_publish = []
-    for mf in disordered_model_fields:
+    for mf in filtered_model_fields:
         for uf in unordered_fields_to_publish:
             if mf.name == uf['id']:
                 fields_to_publish.append(uf)
+
+
+    assert(len(fields_to_publish) == len(fields_to_include))
 
     return SchemaClass, fields_to_publish, primary_keys
 
@@ -220,6 +230,7 @@ def export_table_to_ckan(request,table_name):
     model_field_by_name = {f.name:f for f in model_fields}
 
     list_of_dicts = []
+    fields_to_publish = []
     for d in raw_list_of_dicts:
         baked_d = dict(d)
         for k,v in d.items():
@@ -227,8 +238,13 @@ def export_table_to_ckan(request,table_name):
             # take v as an index and look up the value or values in
             # the referenced model.
             model_field = model_field_by_name[k]
+            if model_field not in fields_to_publish:
+                fields_to_publish.append(model_field)
+            print("model_field = {}, k = {}, v = {}, internal_type = {}".format(model_field, k, v, model_field.get_internal_type()))
             if model_field.get_internal_type() in ['ForeignKey','ManyToManyField']:
-                if model_field.get_internal_type() == 'ManyToManyField' and model_field.many_to_many and model_field.remote_field.get_internal_type() == 'ManyToManyField':
+                if model_field.get_internal_type() == 'ManyToManyField' and model_field.many_to_many and model_field.remote_field.get_internal_type() == 'ManyToManyField': # This
+                    # if clause is long because I was trying to filter out the other end of the Municipality-StateSentateDistrict.district many-to-many field
+                    # but it turns out that it's not in the data exported by the JSON serializer. It's sneaking in through the schema_by_table function...
                     list_of_indices = v
                 elif model_field.get_internal_type() == 'ForeignKey':
                     list_of_indices = [v]
@@ -259,7 +275,7 @@ def export_table_to_ckan(request,table_name):
     #  f.remote_field = bitkeeper.Municipality.fire_department ==> type = ManyToManyField
     #  f.related_model = <class 'bitkeeper.models.Municipality'>
 
-    schema, ckan_fields, primary_keys = schema_by_table(table_name)
+    schema, ckan_fields, primary_keys = schema_by_table(table_name,fields_to_publish)
 
     pprint(schema)
     pprint(ckan_fields)
