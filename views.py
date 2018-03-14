@@ -118,24 +118,12 @@ def schema_by_table(table_name):
     target_table = getattr(models, table_name) # Fetch the Django model by name
     disordered_model_fields = target_table._meta.get_fields() # This returns the fields 
     # in an order different from the order they're defined in models.py.
-    print("dmf = {}".format(disordered_model_fields))
-    disordered_model_field_names = [d.name for d in disordered_model_fields]
 
-    disordered_model_fields_by_name = {dmf.name:dmf for dmf in disordered_model_fields}
+#                if field.get_internal_type() == 'ManyToManyField' and field.many_to_many:
 
-    print("disordered_model_field_names = {}".format(disordered_model_field_names))
-    model_fields = [] 
-    print("target_table.__dict__ = {}".format(list(target_table.__dict__.keys())))
-
-    for fn in list(target_table.__dict__.keys()):
-        if fn in disordered_model_field_names:
-            field = disordered_model_fields_by_name[fn]
-            model_fields.append(field)
-
-    print("model_fields = {}".format(model_fields))
 
     # The fields will probably need to be pared down in a way similar to
-    # that used for generating the CSV fields, so some refactoring is in order.
+    # that used for generating the CSV fields, so some refactoring could be done.
 
     #   [ ] Refactor!
 
@@ -160,9 +148,8 @@ def schema_by_table(table_name):
     #        "func_val": some_func,
     #        "class_func": some_class_method
     #    }))
-    #SchemaClass = type("ThingSchema", (pl.BaseSchema,), {})
     primary_keys = []
-    for field in model_fields:
+    for field in disordered_model_fields:
         if keep(field) and field.get_internal_type() != 'AutoField':
             #for x in dir(field):
             #    if x[0] != '_':
@@ -182,19 +169,15 @@ def schema_by_table(table_name):
             attributes[field.name] = marshmallow_field(**kwargs) #fields.something(with parameters determined and set here)
             #setattr(SchemaClass, field.name, property(marshmallow_field(**kwargs)))
 
-    print(" Attributes: ")
-    pprint(attributes)
     SchemaClass = type("ThingSchema", (pl.BaseSchema,), attributes)
 
     unordered_fields_to_publish = SchemaClass().serialize_to_ckan_fields() # This is a list of dicts encoded for CKAN.
     fields_to_publish = []
-    for mf in model_fields:
+    for mf in disordered_model_fields:
         for uf in unordered_fields_to_publish:
             if mf.name == uf['id']:
                 fields_to_publish.append(uf)
 
-    print("  Fields to publish:")
-    pprint(fields_to_publish)
     return SchemaClass, fields_to_publish, primary_keys
 
 def export_table_to_ckan(request,table_name):
