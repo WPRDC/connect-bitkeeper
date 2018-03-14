@@ -16,7 +16,7 @@ class FireDepartment(models.Model):
         return '{}'.format(self.name)
 
 class PGHCouncilDistrict(models.Model):
-    council_district = models.SmallIntegerField(unique=True,primary_key=True)
+    council_district = models.SmallIntegerField(unique=True)
     committee = models.CharField(max_length=100)
     phone = models.CharField(max_length=50, blank=True, null=True)
     council_member = models.CharField(max_length=100) # This is city council
@@ -32,8 +32,8 @@ class PGHCouncilDistrict(models.Model):
         return '{}'.format(self.council_district)
 
     class Meta:
-        verbose_name = "PGH council district"
-        verbose_name_plural = "PGH council districts"
+        verbose_name = "Pittsburgh council district"
+        verbose_name_plural = "Pittsburgh council districts"
 
 class EMSDepartment(models.Model):
     name = models.CharField(max_length=100, unique=True)
