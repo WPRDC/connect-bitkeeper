@@ -163,11 +163,14 @@ def schema_by_table(table_name):
             marshmallow_field = type_to_field[django_field_type]
             kwargs = {}
             kwargs['allow_none'] = True
-            if field.unique or field.primary_key:
+            if hasattr(field,'unique') and field.unique:
                 primary_keys.append(field.name)
                 kwargs['allow_none'] = False
-            attributes[field.name] = marshmallow_field(**kwargs) #fields.something(with parameters determined and set here)
-            #setattr(SchemaClass, field.name, property(marshmallow_field(**kwargs)))
+            elif hasattr(field,'primary_key') and field.primary_key:
+                primary_keys.append(field.name)
+                kwargs['allow_none'] = False
+
+            attributes[field.name] = marshmallow_field(**kwargs) 
 
     SchemaClass = type("ThingSchema", (pl.BaseSchema,), attributes)
 
