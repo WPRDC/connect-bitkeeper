@@ -265,7 +265,7 @@ def export_table_to_ckan(request,table_name):
     pprint(ckan_fields)
     pprint(primary_keys)
     #message = 'Edit code to send data'
-    resource_name_base = target_table._meta.verbose_name_plural.title()
+    resource_name_base = target_table._meta.verbose_name_plural
     message = send_data_to_pipeline(resource_name_base,table_name,schema,list_of_dicts,ckan_fields,primary_keys,chunk_size=5000)
 
 
