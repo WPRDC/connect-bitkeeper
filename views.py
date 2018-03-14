@@ -27,12 +27,12 @@ def write_to_csv(filename,list_of_dicts,keys):
         dict_writer.writeheader()
         dict_writer.writerows(list_of_dicts)
 
-def send_data_to_pipeline(table_name,schema,list_of_dicts,fields,primary_keys,chunk_size=5000):
+def send_data_to_pipeline(resource_name_base,table_name,schema,list_of_dicts,fields,primary_keys,chunk_size=5000):
     # Taken from github.com/WPRDC/stop-in-the-name-of-data.
 
     specify_resource_by_name = True
     if specify_resource_by_name:
-        kwargs = {'resource_name': 'CONNECT Data: {}'.format(table_name)}
+        kwargs = {'resource_name': 'CONNECT Data: {}'.format(resource_name_base)}
     #else:
         #kwargs = {'resource_id': ''}
 
@@ -225,7 +225,8 @@ def export_table_to_ckan(request,table_name):
     pprint(ckan_fields)
     pprint(primary_keys)
     #message = 'Edit code to send data'
-    message = send_data_to_pipeline(table_name,schema,list_of_dicts,ckan_fields,primary_keys,chunk_size=5000)
+    resource_name_base = target_table._meta.verbose_name_plural.title()
+    message = send_data_to_pipeline(resource_name_base,table_name,schema,list_of_dicts,ckan_fields,primary_keys,chunk_size=5000)
 
 
     context = {'result': '', 'message': message}
