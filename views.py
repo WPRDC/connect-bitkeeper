@@ -77,10 +77,27 @@ def send_data_to_pipeline(resource_name_base,table_name,schema,list_of_dicts,fie
         settings = json.load(f)
     site = settings['loader'][server]['ckan_root_url']
     package_id = settings['loader'][server]['package_id']
+    API_key = settings['loader'][server]['ckan_api_key']
 
-    print("Preparing to pipe data from {} to resource {} package ID {} on {}".format(target,list(kwargs.values())[0],package_id,site))
-    #time.sleep(1.0)
+    update_method = 'upsert'
+    if len(primary_keys) == 0:
+        update_method = 'insert'
 
+    clear_first = False
+    if update_method == 'insert':
+        # If the datastore already exists, we need to delete it.
+        # We can do this through a CKAN API call (if we know
+        # the resource ID) or by setting clear_first = True
+        # on the pipeline.
+        
+        # However, the ETL framework fails if you try to 
+        # use clear_first = True when the resource doesn't
+        # exist, so check that it exists.
+        resource_exists = (find_resource_id(site,package_id,kwargs['resource_name'],API_key) is not None)
+        if resource_exists:
+            clear_first = True
+
+    print("Preparing to pipe data from {} to resource {} package ID {} on {}, using the update method {} with clear_first = {}".format(target,list(kwargs.values())[0],package_id,site,update_method,clear_first))
 
     super_pipeline = pl.Pipeline('yet_another_pipeline',
                                       'Pipeline for Bitkeeper Data',
@@ -94,12 +111,13 @@ def send_data_to_pipeline(resource_name_base,table_name,schema,list_of_dicts,fie
         .extract(pl.CSVExtractor, firstline_headers=True) \
         .schema(schema) \
         .load(pl.CKANDatastoreLoader, server,
+              clear_first=clear_first,
               fields=fields,
               #package_id=package_id,
               #resource_id=resource_id,
               #resource_name=resource_name,
               key_fields=primary_keys,
-              method='upsert',
+              method=update_method,
               **kwargs).run()
     log = open('uploaded.log', 'w+')
     if specify_resource_by_name:
