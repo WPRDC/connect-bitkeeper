@@ -1,32 +1,44 @@
-<html>
+{% extends "bitkeeper/base.html" %}
 
-    <body>
-        <h2>Data statistics</h2>
-        <b>Table name, Number of rows</b><br>
-        {% for row in table_stats %}
-            {{ row }}<br>
-        {% endfor %}
-        <hr>
-        <h2>Data download options</h2>
-        <ul>Download data tables as CSV files
-        {% for model in table_names %}
-            <li><a href="/bitkeeper/{{ model }}/csv">Download {{ model }} data</a></li>
-        {% endfor %}
-        </ul>
-        <hr>
-        <h2>Push data to CKAN</h2>
-        <ul>Update individual tables by clicking the links
-        {% for model in table_names %}
-            <li><a href="/bitkeeper/{{ model }}/push">Update {{ model }} data</a></li>
-        {% endfor %}
-        </ul>
-        <hr>
-        <ul>To Do
-            <li>"Push this button to update all CONNECT data on the WPRDC data portal."
-                <ul><li>A table could be added to track update timestamps, but then some exception would need to be made to not publish certain tables.</li></ul>
-            <li>Put control panel under administrator-only access 
-            <li>Add Skeleton CSS
-        </ul>
+{% block content %}
+<div class="container">
+    <div class="row">
+         <div class="six columns">   
+             <h3>Data statistics</h3>
+            <b>Table name, Number of rows</b><br>
+            {% for row in table_stats %}
+                {{ row }}<br>
+            {% endfor %}
+         </div>
+        <div class="six columns">
+            <ul>To Do
+                <li>"Push this button to update all CONNECT data on the WPRDC data portal."
+                    <ul><li>A table could be added to track update timestamps, but then some exception would need to be made to not publish certain tables.</li></ul>
+                <li>Put control panel under administrator-only access 
+            </ul>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="six columns">
+            <h2>Data download options</h2>
+            <ul>Download data tables as CSV files
+            {% for model in table_names %}
+                <li><a href="/bitkeeper/{{ model }}/csv">Download {{ model }} data</a></li>
+            {% endfor %}
+            </ul>
+        </div>
+        <div class="six columns">
+            <h2>Push data to CKAN</h2>
+            <ul>Update individual tables by clicking the links
+            {% for model in table_names %}
+                <li><a href="/bitkeeper/{{ model }}/push">Update {{ model }} data</a></li>
+            {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
         <h2>N/A editor</h2>
         When the base data was initially imported into Bitkeeper, missing values (in partially filled columns) were given the value "N/A". In the table below, you can click the corresponding link to edit each of these missing values. <P>
         <ul>
@@ -37,5 +49,6 @@
         <br>
         <br>
         If there really is no value that goes in that field (like the "mayor" field of a municipality that has no mayor), delete "N/A" from that field and save the table row. (Doing this sets the value of that field to null/None).
-    </body>
-</html>
+    </div>
+</div>
+{% endblock content %}

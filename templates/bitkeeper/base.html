@@ -1,0 +1,24 @@
+{% load static %}<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>{% block title %}CONNECT Bitkeeper Control Panel{% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'bitkeeper/css/skeleton.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'bitkeeper/css/normalize.css' %}">
+    {% block stylesheet %}{% endblock %}
+  </head>
+  <body>
+    <header>
+        <h1>CONNECT Bitkeeper Control Panel</h1>
+    </header>
+    <main>
+      {% block content %}
+      {% endblock %}
+    </main>
+    <footer>
+      WPRDC: We do what we must because we can.
+    </footer>
+    <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+    {% block javascript %}{% endblock %}
+  </body>
+</html>
