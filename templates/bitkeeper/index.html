@@ -4,11 +4,17 @@
 <div class="container">
     <div class="row">
          <div class="six columns">   
-             <h3>Data statistics</h3>
-            <b>Table name, Number of rows</b><br>
-            {% for row in table_stats %}
-                {{ row }}<br>
-            {% endfor %}
+             <h3>Data overview</h3>
+            <table class="u-full-width">
+                <thead><th>Table name</th><th>Number of rows</th></thead>
+                    {% for row in table_stats %}
+                        <tr>
+                            {% for cell in row %}
+                                <td>{{ cell }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+            </table>
          </div>
         <div class="six columns">
             <ul>To Do
@@ -41,12 +47,15 @@
     <div class="row">
         <h2>N/A editor</h2>
         When the base data was initially imported into Bitkeeper, missing values (in partially filled columns) were given the value "N/A". In the table below, you can click the corresponding link to edit each of these missing values. <P>
-        <ul>
-        {% for na_row, na_model in nas %}
-            <li><a href="/admin/bitkeeper/{{ na_model | lower }}/{{ na_row.pk }}/change">Edit this row</a> {{na_model}}: {{ na_row }}</li>
-        {% endfor %}
-        </ul>
-        <br>
+        <table class="u-full-width">
+            <thead><th>Model</th><th>Clickable link to row to edit</th></thead>
+            {% for na_row, na_model in nas %}
+            <tr>
+                <td>{{na_model}}</td> 
+                <td><a href="/admin/bitkeeper/{{ na_model | lower }}/{{ na_row.pk }}/change">{{ na_row }}</a></td>
+            </tr>
+            {% endfor %}
+        </table>
         <br>
         If there really is no value that goes in that field (like the "mayor" field of a municipality that has no mayor), delete "N/A" from that field and save the table row. (Doing this sets the value of that field to null/None).
     </div>
