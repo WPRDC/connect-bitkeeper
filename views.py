@@ -21,12 +21,21 @@ class SchemaAtom(pl.BaseSchema):
     class Meta:
         ordered = True
 
+def get_resource_parameter(site,resource_id,parameter,API_key=None):
+    try:
+        ckan = ckanapi.RemoteCKAN(site, apikey=API_key)
+        metadata = ckan.action.resource_show(id=resource_id)
+        desired_string = metadata[parameter]
+    except:
+        raise RuntimeError("Unable to obtain resource parameter '{}' for resource with ID {}".format(parameter,resource_id))
+
+    return desired_string
+
 def get_package_parameter(site,package_id,parameter,API_key=None):
     try:
         ckan = ckanapi.RemoteCKAN(site, apikey=API_key)
         metadata = ckan.action.package_show(id=package_id)
         desired_string = metadata[parameter]
-        #print("The parameter {} for this package is {}".format(parameter,metadata[parameter]))
     except:
         raise RuntimeError("Unable to obtain package parameter '{}' for package with ID {}".format(parameter,package_id))
 
@@ -132,7 +141,19 @@ def send_data_to_pipeline(resource_name_base,table_name,schema,list_of_dicts,fie
     ntf.close()
     assert not os.path.exists(target)
 
-    return message
+    resource_id = find_resource_id(site,package_id,kwargs['resource_name'],API_key)
+    csv_download_url = get_resource_parameter(site,resource_id,'url',API_key)
+
+    name = get_package_parameter(site,package_id,'name',API_key)
+
+    #resources = get_package_parameter(site,package_id,'resources',API_key)
+
+    #for r in resources:
+    #    if r['id'] == resource_id:
+    #        resource_url = 
+   
+    package_url = "{}/dataset/{}".format(site,name)
+    return message, package_url, csv_download_url
 
 def schema_by_table(table_name,fields_to_include):
     """This function generates a Marshmallow schema based on the Django app's model fields."""
@@ -312,13 +333,12 @@ def export_table_to_ckan(request,table_name):
 
     schema, ckan_fields, primary_keys = schema_by_table(table_name,fields_to_publish)
 
-    #message = 'Edit code to send data'
     resource_name_base = target_table._meta.verbose_name_plural
     resource_name_base = resource_name_base[0].upper() + resource_name_base[1:]
-    message = send_data_to_pipeline(resource_name_base,table_name,schema,list_of_dicts,ckan_fields,primary_keys,chunk_size=5000)
+    result, package_url, csv_download__url = send_data_to_pipeline(resource_name_base,table_name,schema,list_of_dicts,ckan_fields,primary_keys,chunk_size=5000)
 
 
-    context = {'result': '', 'message': message}
+    context = {'result': result, 'message': 'The data portal page for this datset is <a href="{}">{}</a>'.format(package_url,package_url)}
     # [ ] At present, this will just break if the data fails to upsert.
     return render(request, 'bitkeeper/results.html', context)
 
@@ -394,8 +414,6 @@ def index(request):
                             pks_added.append(row.pk)
 
     nas = zip(na_rows, na_models)
-    print(table_stats)
-
     context = {'table_stats': table_stats, 'table_names': table_names,
             'nas': nas, 'len_of_nas': len(na_rows) }
     return render(request, 'bitkeeper/index.html', context)

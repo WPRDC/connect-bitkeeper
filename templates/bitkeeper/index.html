@@ -27,18 +27,22 @@
     <hr>
     <div class="row">
         <div class="six columns">
-            <h3>Data download options</h3>
-            <ul>Download data tables as CSV files
+            <h3>Push data to WPRDC site</h3>
+            <ul>Update individual tables on the 
+                {% autoescape off %}
+                    <a href="https://data.wprdc.org">wprdc.org</a>
+                {% endautoescape %}
+                dataset by clicking the links below. (The CONNECT map is built from these data tables.)
             {% for model in table_names %}
-                <li><a href="/bitkeeper/{{ model }}/csv">Download {{ model }} data</a></li>
+                <li><a href="/bitkeeper/{{ model }}/push">Update {{ model }} data</a></li>
             {% endfor %}
             </ul>
         </div>
         <div class="six columns">
-            <h3>Push data to CKAN</h3>
-            <ul>Update individual tables by clicking the links
+            <h3>Data download options</h3>
+            <ul>Download data tables as CSV files.
             {% for model in table_names %}
-                <li><a href="/bitkeeper/{{ model }}/push">Update {{ model }} data</a></li>
+                <li><a href="/bitkeeper/{{ model }}/csv">Download {{ model }} data</a></li>
             {% endfor %}
             </ul>
         </div>
@@ -74,5 +78,5 @@
 {% endblock content %}
 
 {% block footercopy %}
-Brought to you by the letters W, P, R, D, and C.
+Brought to you by the letters {% autoescape off %}<a href="https://data.wprdc.org">W, P, R, D, and C</a>{% endautoescape %}
 {% endblock footercopy %}

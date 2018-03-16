@@ -2,7 +2,9 @@
     <body>
         <h2>Results</h2>
         {{ result }}<P>
-        {{ message }}<P>
+        {% autoescape off %}
+            {{ message }}
+        {% endautoescape %}<P>
         
         <a href="/bitkeeper">Return to bitkeeper mission control</a>
     </body>
