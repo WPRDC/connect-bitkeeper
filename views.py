@@ -397,7 +397,7 @@ def index(request):
     print(table_stats)
 
     context = {'table_stats': table_stats, 'table_names': table_names,
-            'nas': nas }
+            'nas': nas, 'len_of_nas': len(na_rows) }
     return render(request, 'bitkeeper/index.html', context)
     #template = loader.get_template('index.html')
 

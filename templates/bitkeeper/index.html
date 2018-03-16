@@ -47,6 +47,15 @@
     <div class="row">
         <h3>N/A editor</h3>
         When the base data was initially imported into Bitkeeper, missing values (in partially filled columns) were given the value "N/A". In the table below, you can click the corresponding link to edit each of these missing values. <P>
+        {% if len_of_nas == 0 %}
+            <P>
+            <div class="one column">
+            </div>
+            <div class="eleven columns">
+                <b>No "N/A" values to edit. Everything looks good!</b><br>
+            </div>
+            <P><br>
+        {% else %} 
         <table class="u-full-width">
             <thead><th>Model</th><th>Row that needs to be edited</th></thead>
             {% for na_row, na_model in nas %}
@@ -56,6 +65,7 @@
             </tr>
             {% endfor %}
         </table>
+        {% endif %}
         <br>
         If there really is no value that goes in that field (like the "mayor" field of a municipality that has no mayor), delete "N/A" from that field and save the table row. (Doing this sets the value of that field to null/None).<br>
     </div>
