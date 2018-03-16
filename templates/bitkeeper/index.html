@@ -27,7 +27,7 @@
     <hr>
     <div class="row">
         <div class="six columns">
-            <h2>Data download options</h2>
+            <h3>Data download options</h3>
             <ul>Download data tables as CSV files
             {% for model in table_names %}
                 <li><a href="/bitkeeper/{{ model }}/csv">Download {{ model }} data</a></li>
@@ -35,7 +35,7 @@
             </ul>
         </div>
         <div class="six columns">
-            <h2>Push data to CKAN</h2>
+            <h3>Push data to CKAN</h3>
             <ul>Update individual tables by clicking the links
             {% for model in table_names %}
                 <li><a href="/bitkeeper/{{ model }}/push">Update {{ model }} data</a></li>
@@ -45,10 +45,10 @@
     </div>
     <hr>
     <div class="row">
-        <h2>N/A editor</h2>
+        <h3>N/A editor</h3>
         When the base data was initially imported into Bitkeeper, missing values (in partially filled columns) were given the value "N/A". In the table below, you can click the corresponding link to edit each of these missing values. <P>
         <table class="u-full-width">
-            <thead><th>Model</th><th>Clickable link to row to edit</th></thead>
+            <thead><th>Model</th><th>Row that needs to be edited</th></thead>
             {% for na_row, na_model in nas %}
             <tr>
                 <td>{{na_model}}</td> 
@@ -57,7 +57,12 @@
             {% endfor %}
         </table>
         <br>
-        If there really is no value that goes in that field (like the "mayor" field of a municipality that has no mayor), delete "N/A" from that field and save the table row. (Doing this sets the value of that field to null/None).
+        If there really is no value that goes in that field (like the "mayor" field of a municipality that has no mayor), delete "N/A" from that field and save the table row. (Doing this sets the value of that field to null/None).<br>
     </div>
+    <br>
 </div>
 {% endblock content %}
+
+{% block footercopy %}
+Brought to you by the letters W, P, R, D, and C.
+{% endblock footercopy %}
