@@ -102,3 +102,11 @@ class WatershedAdmin(admin.ModelAdmin):
     ordering = ['watershed_name']
 
 admin.site.register(Watershed, WatershedAdmin)
+
+class CouncilMemberAdmin(admin.ModelAdmin):
+    list_display = ['municipality', 'name']
+
+    search_fields = list_display
+    ordering = ['municipality', 'name']
+
+admin.site.register(CouncilMember, CouncilMemberAdmin)
