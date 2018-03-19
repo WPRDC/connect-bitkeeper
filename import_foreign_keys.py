@@ -48,7 +48,7 @@ def link_foreign_key(foreign_key_string,model,model_field,target_object,target_f
         except: #DoesNotExist:
             print(" *** Unable to find {} in {}. ***".format(foreign_key, model))
 
-with open('bitkeeper/data/municipality.csv') as csvfile:
+with open('bitkeeper/data/municipality-NA.csv') as csvfile:
     reader = csv.DictReader(csvfile)
     ##fds_by_muni = defaultdict(list) # Idea for accumulating ManyToMany relations in a narrow format; this
     ## is not needed yet since municipality.csv uses ", " delimited lists in single cells at present for
