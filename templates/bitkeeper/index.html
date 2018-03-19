@@ -9,17 +9,14 @@
                 <thead><th>Table name</th><th>Number of rows</th></thead>
                     {% for row in table_stats %}
                         <tr>
-                            {% for cell in row %}
-                                <td>{{ cell }}</td>
-                            {% endfor %}
+                            <td><a href="/admin/bitkeeper/{{ row.table_name | lower }}/">{{ row.table_name }}</a></td>
+                            <td>{{ row.row_count }}</td>
                         </tr>
                     {% endfor %}
             </table>
          </div>
         <div class="six columns">
             <ul>To Do
-                <li>"Push this button to update all CONNECT data on the WPRDC data portal."
-                    <ul><li>A table could be added to track update timestamps, but then some exception would need to be made to not publish certain tables.</li></ul>
                 <li>Put control panel under administrator-only access 
             </ul>
         </div>

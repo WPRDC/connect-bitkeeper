@@ -398,7 +398,7 @@ def index(request):
     for model in all_models:
         table_names.append(model.__name__) #model._meta.object_name)
         all_objects = model.objects.all()
-        table_stats.append([model.__name__, len(all_objects)])
+        table_stats.append({'table_name': model.__name__, 'row_count': len(all_objects)})
         for field in model._meta.get_fields():
             if field.name not in ['id']:
                 field_type_name = field.get_internal_type()
