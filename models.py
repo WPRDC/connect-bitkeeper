@@ -116,6 +116,11 @@ class StateHouseDistrict(models.Model):
 
 class Municipality(models.Model):
     municipality = models.CharField(max_length=100, unique=True)
+    municode = models.IntegerField(blank=True, null=True) # These are actually unique, so they could be used as primary keys,
+    # but doing so would interfere with the data export process.
+
+    # I obtained these municode values from the Allegheny County Municipal Boundaries dataset:
+    # https://data.wprdc.org/dataset/allegheny-county-municipal-boundaries/resource/e688bfa3-e005-4b3c-894c-6ed21a5d0227
     cog = models.CharField(verbose_name = "COG", max_length=100, blank=True, null=True)
     congressional_district = models.SmallIntegerField(blank=True, null=True)
     municipal_web_site = models.CharField(max_length=100, blank=True, null=True)
