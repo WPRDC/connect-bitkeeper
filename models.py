@@ -3,12 +3,12 @@ from django.db import models
 
 class FireDepartment(models.Model):
     name = models.CharField(max_length=100, unique=True)
-    street_address = models.CharField(max_length=100)
-    address_city = models.CharField(max_length=50) # The mailing address
+    street_address = models.CharField(max_length=100,blank=True, null=True)
+    address_city = models.CharField(max_length=50, blank=True, null=True)# The mailing address
     # may often have a city value of "Pittsburgh" even though the 
     # location is in some other municipality, so we use the disambiguating
     # field name "address_city".
-    zip_code = models.CharField(max_length=10)
+    zip_code = models.CharField(max_length=10,blank=True, null=True)
     latitude = models.FloatField(blank=True, null=True)
     longitude = models.FloatField(blank=True, null=True)
 
@@ -40,11 +40,11 @@ class PGHCouncilDistrict(models.Model):
 
 class EMSDepartment(models.Model):
     name = models.CharField(max_length=100, unique=True)
-    street_address = models.CharField(max_length=100)
-    address_city = models.CharField(max_length=50)
-    zip_code = models.CharField(max_length=10)
-    director_name = models.CharField(max_length=100)
-    contact = models.CharField(max_length=100)
+    street_address = models.CharField(max_length=100, blank=True, null=True)
+    address_city = models.CharField(max_length=50, blank=True, null=True)
+    zip_code = models.CharField(max_length=10, blank=True, null=True)
+    director_name = models.CharField(max_length=100, blank=True, null=True)
+    contact = models.CharField(max_length=100, blank=True, null=True)
     director_email = models.CharField(max_length=100, blank=True, null=True)
     web_site = models.CharField(max_length=90, blank=True, null=True)
     pittsburgh_council_district = models.ForeignKey(PGHCouncilDistrict, blank=True, null=True)
@@ -57,9 +57,9 @@ class EMSDepartment(models.Model):
 
 class PoliceDepartment(models.Model):
     police_station = models.CharField(max_length=100, unique=True)
-    street_address = models.CharField(max_length=100)
-    address_city = models.CharField(max_length=50)
-    zip_code = models.CharField(max_length=10)
+    street_address = models.CharField(max_length=100, blank=True, null=True)
+    address_city = models.CharField(max_length=50, blank=True, null=True)
+    zip_code = models.CharField(max_length=10, blank=True, null=True)
     chief_name = models.CharField(max_length=50, blank=True, null=True)
     phone = models.CharField(max_length=50, blank=True, null=True)
     chief_email = models.CharField(max_length=90, blank=True, null=True)
@@ -172,15 +172,15 @@ class CouncilMember(models.Model):
 
 class Library(models.Model):
     library_name = models.CharField(max_length=100,unique=True)
-    street_address = models.CharField(max_length=100)
-    address_city = models.CharField(max_length=50)
+    street_address = models.CharField(max_length=100, blank=True, null=True)
+    address_city = models.CharField(max_length=50, blank=True, null=True)
     #state = models.CharField(max_length=2)
     # Why is the state listed here but not elsewhere?
     # I think it's fine to just assume that the state is "PA" 
     # everywhere in this database until that becomes untrue.
-    zip_code = models.CharField(max_length=10)
+    zip_code = models.CharField(max_length=10, blank=True, null=True)
     web_site = models.CharField(max_length=90, blank=True, null=True)
-    contact = models.CharField(max_length=100)
+    contact = models.CharField(max_length=100, blank=True, null=True)
 
     class Meta:
         verbose_name_plural = "library"
