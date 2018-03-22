@@ -60,7 +60,7 @@ def send_data_to_pipeline(resource_name_base,table_name,schema,list_of_dicts,fie
 
     specify_resource_by_name = True
     if specify_resource_by_name:
-        kwargs = {'resource_name': 'CONNECT Data: {}'.format(resource_name_base)}
+        kwargs = {'resource_name': 'CONNECT: {}'.format(resource_name_base)}
     #else:
         #kwargs = {'resource_id': ''}
 
@@ -79,7 +79,7 @@ def send_data_to_pipeline(resource_name_base,table_name,schema,list_of_dicts,fie
     #    print(g.read())
 
     ntf.seek(0)
-    server = "secret-cool-data"
+    server = "test-connect"
     # Code below stolen from prime_ckan/*/open_a_channel() but really from utility_belt/gadgets
     #with open(os.path.dirname(os.path.abspath(__file__))+'/ckan_settings.json') as f: # The path of this file needs to be specified.
     with open(SETTINGS_FILE) as f:
