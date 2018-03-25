@@ -192,6 +192,7 @@ def schema_by_table(table_name,fields_to_include):
             'CharField': fields.String,
             'FloatField': fields.Float,
             'SmallIntegerField': fields.Integer,
+            'IntegerField': fields.Integer,
             'ForeignKey': fields.String,  # Of course, not all
             # foreign keys are strings, but we're going to coerce
             # them to be so for now.
