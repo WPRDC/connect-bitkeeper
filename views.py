@@ -1,4 +1,6 @@
 from django.shortcuts import render
+from django.conf import settings
+from django.shortcuts import redirect
 from django.db import models as django_models
 #from django.contrib.auth.decorators import user_passes_test
 #from django.shortcuts import render_to_response
@@ -260,6 +262,9 @@ def serialized_value(xs):
     return '|'.join([str(x) for x in xs])
 
 def export_table_to_ckan(request,table_name):
+    if not request.user.is_authenticated():
+        return redirect('%s?next=%s' % ('/admin/login/', request.path))
+
     try:
         target_table = getattr(models, table_name)
     except AttributeError:
@@ -349,6 +354,8 @@ def keep(field):
     return True
 
 def csv_view(request,table_name):
+    if not request.user.is_authenticated():
+        return redirect('%s?next=%s' % ('/admin/login/', request.path))
     # Create the HttpResponse object with the appropriate CSV header.
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format(table_name)
@@ -383,6 +390,10 @@ def csv_view(request,table_name):
     return response
 
 def index(request):
+    if not request.user.is_authenticated():
+        return redirect('%s?next=%s' % ('/admin/login/', request.path))
+        #return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
+
     app_name = 'bitkeeper'
     from django.apps import apps
     from django.contrib import admin
