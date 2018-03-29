@@ -43,6 +43,8 @@ class EMSDepartment(models.Model):
     street_address = models.CharField(max_length=100, blank=True, null=True)
     address_city = models.CharField(max_length=50, blank=True, null=True)
     zip_code = models.CharField(max_length=10, blank=True, null=True)
+    latitude = models.FloatField(blank=True, null=True)
+    longitude = models.FloatField(blank=True, null=True)
     director_name = models.CharField(max_length=100, blank=True, null=True)
     contact = models.CharField(max_length=100, blank=True, null=True)
     director_email = models.CharField(max_length=100, blank=True, null=True)
@@ -60,6 +62,8 @@ class PoliceDepartment(models.Model):
     street_address = models.CharField(max_length=100, blank=True, null=True)
     address_city = models.CharField(max_length=50, blank=True, null=True)
     zip_code = models.CharField(max_length=10, blank=True, null=True)
+    latitude = models.FloatField(blank=True, null=True)
+    longitude = models.FloatField(blank=True, null=True)
     chief_name = models.CharField(max_length=50, blank=True, null=True)
     phone = models.CharField(max_length=50, blank=True, null=True)
     chief_email = models.CharField(max_length=90, blank=True, null=True)
@@ -179,6 +183,8 @@ class Library(models.Model):
     # I think it's fine to just assume that the state is "PA" 
     # everywhere in this database until that becomes untrue.
     zip_code = models.CharField(max_length=10, blank=True, null=True)
+    latitude = models.FloatField(blank=True, null=True)
+    longitude = models.FloatField(blank=True, null=True)
     web_site = models.CharField(max_length=90, blank=True, null=True)
     contact = models.CharField(max_length=100, blank=True, null=True)
 
