@@ -2,10 +2,10 @@ from django.contrib import admin
 
 from .models import Municipality, CouncilMember, FireDepartment, PoliceDepartment, EMSDepartment, Library, PGHCouncilDistrict, Watershed, StateSenateDistrict, StateHouseDistrict
 
-
-admin.site.site_header = 'CONNECT Map Bitkeeper'
-admin.site.site_title = 'CONNECT Map Bitkeeper'
-admin.site.index_title = 'Bitkeeper'
+# The customizations below were edited out since multiple Django apps are running under the same admin view.
+#admin.site.site_header = 'CONNECT Map Bitkeeper'
+#admin.site.site_title = 'CONNECT Map Bitkeeper'
+#admin.site.index_title = 'Bitkeeper'
 
 class EMSInline(admin.TabularInline):
     model = EMSDepartment
