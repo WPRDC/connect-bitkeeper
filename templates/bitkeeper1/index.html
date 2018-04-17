@@ -1,4 +1,4 @@
-{% extends "bitkeeper/base.html" %}
+{% extends "bitkeeper1/base.html" %}
 
 {% block content %}
 <div class="container">
@@ -9,7 +9,7 @@
                 <thead><th>Table name</th><th>Number of rows</th></thead>
                     {% for row in table_stats %}
                         <tr>
-                            <td><a href="/admin/bitkeeper/{{ row.table_name | lower }}/">{{ row.table_name }}</a></td>
+                            <td><a href="/admin/bitkeeper1/{{ row.table_name | lower }}/">{{ row.table_name }}</a></td>
                             <td>{{ row.row_count }}</td>
                         </tr>
                     {% endfor %}
@@ -17,15 +17,9 @@
          </div>
 
         <div class="six columns">
-            <ul>To Do
-                <li>Deploy CONNECT bitkeeper to tools.
-                    <li>Set up JoEllen and others with administrator logins.
-
-                <li>Make map (one layer with municipalities distinguishable by color and a COGs layer)
-                    <li>Pull in the school districts map from the County's GIS server (since Baldwin and Pittsburgh are sharing resources?)
-                <li>Disambiguate "West Mifflin VFD" under West Mifflin Borough
-                <li>Rename datasets: "CONNECT-region libraries"? "Libraries in CONNECT municipalities"?
-                <li>Link from control panel to Google Sheet?
+            <ul>
+                <li><a href="https://data.wprdc.org/dataset/connect-map">CONNECT dataset on wprdc.org</a>
+                <li>Once the dataset is published a map can be created and linked to that dataset.
             </ul>
         </div>
     </div>
@@ -35,11 +29,11 @@
             <h3>Push data to WPRDC site</h3>
             <ul>Update individual tables on the 
                 {% autoescape off %}
-                    <a href="https://data.wprdc.org">wprdc.org</a>
+                    <a href="https://data.wprdc.org/dataset/connect-map">dataset on wprdc.org</a>
                 {% endautoescape %}
-                dataset by clicking the links below. (The CONNECT map is built from these data tables.)
+                by clicking the links below. (The CONNECT map will be built from these data tables.)
             {% for model in table_names %}
-                <li><a href="/bitkeeper/{{ model }}/push">Push {{ model }} data to WPRDC</a></li>
+                <li><a href="/bitkeeper1/{{ model }}/push">Push {{ model }} data to WPRDC</a></li>
             {% endfor %}
             </ul>
         </div>
@@ -47,7 +41,7 @@
             <h3>Data download options</h3>
             <ul>Download data tables as CSV files.
             {% for model in table_names %}
-                <li><a href="/bitkeeper/{{ model }}/csv">Download {{ model }} data</a></li>
+                <li><a href="/bitkeeper1/{{ model }}/csv">Download {{ model }} data</a></li>
             {% endfor %}
             </ul>
         </div>
@@ -70,7 +64,7 @@
             {% for na_row, na_model in nas %}
             <tr>
                 <td>{{na_model}}</td> 
-                <td><a href="/admin/bitkeeper/{{ na_model | lower }}/{{ na_row.pk }}/change">{{ na_row }}</a></td>
+                <td><a href="/admin/bitkeeper1/{{ na_model | lower }}/{{ na_row.pk }}/change">{{ na_row }}</a></td>
             </tr>
             {% endfor %}
         </table>
