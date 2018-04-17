@@ -166,7 +166,7 @@ class Municipality(models.Model):
 
 class CouncilMember(models.Model):
     name = models.CharField(max_length=100)
-    municipality = models.ForeignKey(Municipality)
+    municipality = models.ForeignKey(Municipality,null=True,blank=True)
 
     class Meta:
         verbose_name = "council member"
