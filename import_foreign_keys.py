@@ -1,9 +1,9 @@
 # This script can be run from the Django shell like this:
 #   $ ./manage.py shell
-#   >>> exec(open('bitkeeper/import_foreign_keys.py').read())
+#   >>> exec(open('bitkeeper1/import_foreign_keys.py').read())
 import csv
-
-from bitkeeper.models import Municipality,EMSDepartment,FireDepartment,PoliceDepartment,StateSenateDistrict,StateHouseDistrict,Watershed
+from pprint import pprint
+from bitkeeper1.models import Municipality,EMSDepartment,FireDepartment,PoliceDepartment,StateSenateDistrict,StateHouseDistrict,Watershed
 
 def string_to_list(s):
     return s.split(', ')

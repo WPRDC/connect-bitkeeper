@@ -9,11 +9,12 @@ from .models import FireDepartment, PoliceDepartment
 #from django.template import loader
 from django.http import HttpResponse
 import os, sys, csv, json, datetime, ckanapi
-from bitkeeper import models
+from bitkeeper1 import models
 from pprint import pprint
 from collections import OrderedDict
+import traceback
 
-from bitkeeper.parameters.local_parameters import BITKEEPER_SETTINGS_FILE as SETTINGS_FILE
+from bitkeeper1.parameters.local_parameters import BITKEEPER_SETTINGS_FILE as SETTINGS_FILE
 
 from marshmallow import fields, pre_load, post_load
 sys.path.insert(0, '/Users/drw/WPRDC/etl-dev/wprdc-etl') # A path that we need to import code from
@@ -394,7 +395,7 @@ def index(request):
         return redirect('%s?next=%s' % ('/admin/login/', request.path))
         #return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
 
-    app_name = 'bitkeeper'
+    app_name = 'bitkeeper1'
     from django.apps import apps
     from django.contrib import admin
     from django.contrib.admin.sites import AlreadyRegistered
@@ -428,7 +429,7 @@ def index(request):
     nas = zip(na_rows, na_models)
     context = {'table_stats': table_stats, 'table_names': table_names,
             'nas': nas, 'len_of_nas': len(na_rows) }
-    return render(request, 'bitkeeper/index.html', context)
+    return render(request, 'bitkeeper1/index.html', context)
     #template = loader.get_template('index.html')
 
     #return HttpResponse(template.render(context, request))
