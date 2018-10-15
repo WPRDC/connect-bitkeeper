@@ -43,7 +43,7 @@ class CouncilMemberInline(admin.TabularInline):
 
 class MunicipalityAdmin(admin.ModelAdmin):
     inlines = [CouncilMemberInline]
-    list_display = ['municipality','state_sen_district','state_rep_district','fire_dept','ems_department','police_department','watersheds']
+    list_display = ['municipality','congressional_district', 'state_sen_district','state_rep_district','fire_dept','ems_department','police_department','watersheds']
 
     def state_sen_district(self, obj):
         return ", ".join([str(d.district) for d in obj.state_senate_district.all()])
