@@ -60,6 +60,8 @@ def write_to_csv(filename,list_of_dicts,keys):
 
 def send_data_to_pipeline(resource_name_base,table_name,schema,list_of_dicts,fields,primary_keys,chunk_size=5000):
     # Taken from github.com/WPRDC/stop-in-the-name-of-data.
+    path = '/var/www/wprdc_tools/bitkeeper1/logs/'
+    log = open('{}{}'.format(path,'status.log'), 'w+')
 
     specify_resource_by_name = True
     if specify_resource_by_name:
@@ -91,6 +93,10 @@ def send_data_to_pipeline(resource_name_base,table_name,schema,list_of_dicts,fie
     site = settings['loader'][server]['ckan_root_url']
     package_id = settings['loader'][server]['package_id']
     API_key = settings['loader'][server]['ckan_api_key']
+
+    #kwargs['package_id'] = package_id
+    log.write("kwargs = {}".format(kwargs))
+    #log.close()
 
     update_method = 'upsert'
     if len(primary_keys) == 0:
@@ -132,7 +138,6 @@ def send_data_to_pipeline(resource_name_base,table_name,schema,list_of_dicts,fie
               key_fields=primary_keys,
               method=update_method,
               **kwargs).run()
-    log = open('uploaded.log', 'w+')
     if specify_resource_by_name:
         message = "Piped data to {}".format(kwargs['resource_name'])
         print(message)
@@ -409,6 +414,8 @@ def index(request):
     na_models = []
 
     keys_added = []
+    path = '/var/www/wprdc_tools/bitkeeper1/logs/'
+    log = open('{}{}'.format(path,'winky.log'), 'w+')
 
     for model in all_models:
         table_names.append(model.__name__) #model._meta.object_name)
@@ -422,13 +429,21 @@ def index(request):
                 else:
                     search_kwargs = {field.name: 'N/A'}
                 if field_type_name not in ['ForeignKey', 'ManyToManyField']:
+                    log.write("{} | {}: \n       {}\n".format(model.__name__,field.name,model.objects.filter(**search_kwargs)))
                     for row in model.objects.filter(**search_kwargs):
+                        log.write("{} ({})\n".format(row,row.pk))
                         key = "{}|{}".format(model.__name__,row.pk)
                         if key not in keys_added:
                             na_rows.append(row)
                             na_models.append(model.__name__)
                             keys_added.append(key)
 
+    #log.write("===============")
+    #log.write("{}".format(na_rows))
+    #log.write("{}".format(values_added))
+    #log.write("{}".format(len(na_rows)))
+    #log.write("{}".format(len(values_added)))
+    log.close()
     nas = zip(na_rows, na_models)
     context = {'table_stats': table_stats, 'table_names': table_names,
             'nas': nas, 'len_of_nas': len(na_rows) }
