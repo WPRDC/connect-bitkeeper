@@ -408,7 +408,8 @@ def index(request):
     na_rows = []
     na_models = []
 
-    pks_added = []
+    keys_added = []
+
     for model in all_models:
         table_names.append(model.__name__) #model._meta.object_name)
         all_objects = model.objects.all()
@@ -422,10 +423,11 @@ def index(request):
                     search_kwargs = {field.name: 'N/A'}
                 if field_type_name not in ['ForeignKey', 'ManyToManyField']:
                     for row in model.objects.filter(**search_kwargs):
-                        if row.pk not in pks_added:
+                        key = "{}|{}".format(model.__name__,row.pk)
+                        if key not in keys_added:
                             na_rows.append(row)
                             na_models.append(model.__name__)
-                            pks_added.append(row.pk)
+                            keys_added.append(key)
 
     nas = zip(na_rows, na_models)
     context = {'table_stats': table_stats, 'table_names': table_names,
